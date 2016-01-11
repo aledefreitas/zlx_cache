@@ -13,6 +13,6 @@
     ],
     "minimum-stability": "stable",
 	"autoload": {
-		"psr-0": { "ZLXCache": "src" }
+		"psr-0": { "ZLX\Cache": "src/Cache/" }
 	}
 }
