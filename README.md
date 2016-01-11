@@ -42,8 +42,8 @@ Ou então você pode baixar a release que quiser no [nosso repositório](https:/
 
 ### Requerimentos
 ---------
--**PHP 5.6+***
- -**Memcached***
+ - ***PHP 5.6+***
+ - ***Memcached***
 
 ### Modo de uso
 ---------
