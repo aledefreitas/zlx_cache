@@ -34,7 +34,7 @@ class NullEngine extends CacheEngine {
 		return true;
 	}
 	
-	public function clear() {
-		
+	public function clear($ignore_prevents = false) {
+		return false;
 	}
 }
