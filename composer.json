@@ -12,7 +12,4 @@
         }
     ],
     "minimum-stability": "stable",
-	"autoload": {
-		"psr-0": { "ZLX": "src" }
-	}
 }
