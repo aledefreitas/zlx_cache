@@ -18,6 +18,9 @@ namespace ZLX\Cache\Engine;
 
 use ZLX\Cache\CacheEngine;
 
+/**
+ * Engine nula
+ */
 class NullEngine extends CacheEngine {
 	public function set($key, $value) {
 		return true;
