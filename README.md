@@ -33,7 +33,6 @@ Também pode apagar dados de várias instâncias de uma só vez, através dos na
    }
 }
 ```
-***É necessário que o servidor que utilizará o composer tenha sua SSH-KEY cadastrada neste repositório***
 
 Ou então você pode baixar a release que quiser no [nosso repositório](https://github.com/aledefreitas/zlx_cache/releases), e fazer um require no inicio de seu código:
 ```php
