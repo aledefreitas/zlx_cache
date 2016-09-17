@@ -1,6 +1,7 @@
 # ZLX Cache
 ===============
 ZLX Cache v1.0.0 - 11 de Janeiro de 2016
+ZLX Cache v1.1.0 - 16 de Setembro de 2016
 
 por Alexandre de Freitas Caetano
 http://github.com/aledefreitas/
