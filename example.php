@@ -33,22 +33,29 @@
 	Cache::set("Posts.post_2", "Post 2 no cache", "meu_cache");
 	Cache::clearGroup("Posts", "default");	
 	
-	echo var_dump(Cache::get("Posts.post_1", "default")).PHP_EOL; // Deve retornar: false
-	echo var_dump(Cache::get("Posts.post_2", "default")).PHP_EOL; // Deve retornar: false
+	echo var_dump(Cache::get("Posts.post_1", "default")).PHP_EOL; // Deve retornar: valor stale
+	echo var_dump(Cache::get("Posts.post_2", "default")).PHP_EOL; // Deve retornar: valor stale
 	echo var_dump(Cache::get("Posts.post_2", "meu_cache")).PHP_EOL; // Deve retornar: "Post 2 no cache"
 
 	Cache::set("Posts.post_2", "Post 2 no cache Default", "default");
 	Cache::clearNamespace("Posts");
-	echo var_dump(Cache::get("Posts.post_2", "default")).PHP_EOL; // Deve retornar: false
-	echo var_dump(Cache::get("Posts.post_2", "meu_cache")).PHP_EOL; // Deve retornar: false
+	echo var_dump(Cache::get("Posts.post_2", "default")).PHP_EOL; // Deve retornar: valor stale
+	echo var_dump(Cache::get("Posts.post_2", "meu_cache")).PHP_EOL; // Deve retornar: valor stale
 	
 	echo var_dump(Cache::remember("Posts.post_3", function() {
 		return "Post 3";
 	}, "meu_cache")).PHP_EOL; // Deve retornar: "Post 3"
+	Cache::clearGroup("Posts", "meu_cache");	
 	
-	Cache::delete("Posts.post_3", "meu_cache");
-	echo var_dump(Cache::get("Posts.post_3", "meu_cache")).PHP_EOL; // Deve retornar: false
+	echo var_dump(Cache::remember("Posts.post_3", function() {
+		return "Post 4";
+	}, "meu_cache")).PHP_EOL; // Deve retornar: "Post 4"
+	
+	Cache::clearGroup("Posts", "meu_cache");	
 
+	echo var_dump(Cache::get("Posts.post_3", "meu_cache")).PHP_EOL; // Deve retornar: false (Pois ele seta um novo stale)
+	echo var_dump(Cache::get("Posts.post_3", "meu_cache")).PHP_EOL; // Deve retornar: "Post 4" (Usando o Stale)
+	
 	Cache::set("Posts.post_2", "Post 2 no cache", "meu_cache");
 	Cache::set("Session.teste", "teste de session", "meu_cache");
 	

@@ -133,12 +133,13 @@ abstract class CacheEngine {
 	/**
 	 * Cria uma chave com um valor no cache
 	 * 
-	 * @param	string		$key		Nome da chave
-	 * @param	mixed		$value		Valor atribuído a chave
+	 * @param	string		$key			Nome da chave
+	 * @param	mixed		$value			Valor atribuído a chave
+	 * @param	int			$custom_ttl		Tempo personalizado de vida do cache 
 	 * 
 	 * @return boolean
 	 */
-	abstract public function set($key, $value);
+	abstract public function set($key, $value, $custom_ttl = false);
 
 	/**
 	 * Retorna o valor de uma chave no cache
@@ -166,6 +167,17 @@ abstract class CacheEngine {
 	 * @return boolean
 	 */
 	abstract public function clear($ignore_prevents = false);
+	
+	/**
+	 * Adiciona um valor a uma chave no cache
+	 *
+	 * @param	string		$key		Chave do cache
+	 * @param	mixed		$value		Valor a adicionar a chave
+	 * @param	int			$ttl		Tempo de vida do cache, em segundos
+	 *
+	 * @return boolean
+	 */
+	abstract public function add($key, $value, $ttl = 3);
 	
 	/**
 	 * Método construtor
@@ -198,7 +210,7 @@ abstract class CacheEngine {
 	 *
 	 * @return string
 	 */
-	protected function _key($key) {
+	protected function _key($key, $use_stale = false) {
 		$key = $this->sanitizeKey($key);
 
 		if($group = explode(".", $key))
@@ -209,9 +221,47 @@ abstract class CacheEngine {
 		$groupToCompare = $group;
 		
 		if(isset($this->_groups[$groupToCompare]))
-			return $this->_configs['prefix'].$group."_".$this->_groups[$groupToCompare]."_".$key;
+			if($use_stale === true)
+				return $this->_configs['prefix'].$group."_".max(0,$this->_groups[$groupToCompare]-1)."_".$key;
+			else
+				return $this->_configs['prefix'].$group."_".$this->_groups[$groupToCompare]."_".$key;
+				
 		
 		return $key;
+	}
+		
+	/**
+	 * Retorna a chave no cache para a última entrada que sofreu clear no cache
+	 *
+	 * @param	string		$key		
+	 *
+	 * @return string
+	 */
+	public function getGroupClearedKey($key) {
+		return $this->_key($key, true);
+	}
+	
+	/**
+	 * Tenta retornar dados Stale para uma chave do cache
+	 *
+	 * @param	string		$key		Chave a ser utilizada
+	 *
+	 * @return mixed
+	 */
+	public function getStaleData($key) {
+		return $this->get($key."_stale_data");
+	}
+	
+	/**
+	 * Escreve os dados Stale para uma chave do cache
+	 *
+	 * @param	string	$key		Key a ser escrita no cache
+	 * @param	mixed	$value		Valor a ser escrito na key especificada no cache
+	 *
+	 * @return void
+	 */
+	public function setStaleData($key, $value) {
+		$this->set($key."_stale_data", $value, max(300, round($this->_configs['duration']*0.5)));
 	}
 	
 	/**

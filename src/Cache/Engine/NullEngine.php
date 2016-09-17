@@ -22,7 +22,7 @@ use ZLX\Cache\CacheEngine;
  * Engine nula
  */
 class NullEngine extends CacheEngine {
-	public function set($key, $value) {
+	public function set($key, $value, $custom_ttl = false) {
 		return true;
 	}
 	
@@ -36,5 +36,9 @@ class NullEngine extends CacheEngine {
 	
 	public function clear($ignore_prevents = false) {
 		return false;
+	}
+	
+	public function add($key, $value, $ttl = 3) {
+		return true;	
 	}
 }

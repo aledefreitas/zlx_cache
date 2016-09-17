@@ -458,7 +458,29 @@ class Cache {
 	public static function get($key, $instance = "default") {
 		$engine = self::instance($instance);
 		
-		return $engine->get($key);
+		$value = $engine->get($key);
+		
+		if(!$value):
+			$stale = $engine->getStaleData($key);
+
+			if($stale)
+				return $stale;
+
+			$stale_key = $engine->getGroupClearedKey($key);
+			
+			if(!$stale_key)
+				return false;
+				
+			$stale_data = $engine->get($stale_key);
+			
+			if($stale_data):
+				$engine->setStaleData($key, $stale_data);
+			endif;
+			
+			return false;
+		endif;
+		
+		return $value;			
 	}
 	
 	/**
@@ -488,7 +510,7 @@ class Cache {
 		
 		$engine->clear($ignore_prevents);
 	}
-	
+		
 	/**
 	 * Função estática que pesquisa uma chave no cache, e caso não haja valor, cria a chave com o valor do método enviado
 	 *
@@ -496,18 +518,79 @@ class Cache {
 	 * @param	function	$callable	Método que retorna o valor da chave a ser setado, caso a mesma não exista
 	 * @param	string		$instance	Instância de Cache a utilizar
 	 */
-	public static function remember($key, $callable, $instance = "default") {
+	public static function remember($key, $callable, $instance = 'default') {
+        $existing = self::get($key, $instance);
+
+        if ($existing !== false)
+            return $existing;
+		
+		$lock_acquired = self::acquire_lock($key, 3, $instance);
+
+		$max_tries = 300;
+		$tries = 0;
+
+		while(!$lock_acquired and $tries < $max_tries):
+			$lock_acquired = self::acquire_lock($key, 3, $instance);
+
+			$tries++;
+			usleep(10000);
+		endwhile;
+		
+		$engine = self::instance($instance);
+        $existing = $engine->get($key);
+
+        if ($existing !== false)
+            return $existing;
+
+        $results = call_user_func($callable);
+        self::set($key, $results, $instance);
+
+		self::release_lock($key, $instance);
+
+        return $results;
+	}
+	
+	/**
+	 * Função de ADD no cache
+	 *
+	 * @param	string		$key		Chave do cache
+	 * @param	mixed		$value		Valor a adicionar a chave
+	 * @param	string		$instance	Instancia do cache
+	 * @param	int			$ttl		Tempo de vida do cache, em segundos
+	 *
+	 * @return boolean
+	 */
+	public static function add($key, $value, $instance = 'default', $ttl = 3) {
 		$engine = self::instance($instance);
 		
-		$value = $engine->get($key);
-		
-		if(!$value):
-			$value = call_user_func($callable);
-			$engine->set($key, $value);
-		endif;
-		
-		return $value;
+		return $engine->add($key, $value, $ttl);
 	}
+	
+	/**
+	 * Tenta adquirir um lock de execução para escrita no cache para uma chave única
+	 *
+	 * @param	string		$key			Chave em que será feito o lock
+	 * @param	int			$ttl			Tempo de vida do lock, em segudos
+	 * @param	string		$instance		Config do cache a ser utilizada
+	 *
+	 * @return boolean
+	 */
+	private static function acquire_lock($key, $ttl = 3, $instance = 'default') {
+		return self::add($key."__lock__", 1, $instance, $ttl);
+	}
+
+	/**
+	 * Solta o lock de execução de escrita no cache para uma chave única
+	 *
+	 * @param	string		$key		Chave em que será feito o lock
+	 * @param	string		$instance		Config do cache a ser utilizada
+	 *
+	 * @return boolean
+	 */
+	private static function release_lock($key, $instance = 'default') {
+		return self::delete($key."__lock__", $instance);
+	}
+
 	
 	/**
 	 * Função estática que invoca a função clear() de todas as instâncias contidas no namespace enviado

@@ -99,13 +99,16 @@ class MemcachedEngine extends CacheEngine {
 	/**
 	 * Seta um valor dentro de uma chave no memcached 
 	 *
-	 * @param	string		$key		Chave a ser setada no cache
-	 * @param	mixed		$value		Valor a ser salvo nesta chave
+	 * @param	string		$key			Chave a ser setada no cache
+	 * @param	mixed		$value			Valor a ser salvo nesta chave
+	 * @param	boolean		$custom_ttl		Tempo personalizado de vida da chave
 	 *
 	 * @return boolean
 	 */
-	public function set($key, $value) {
-		return $this->connection->set($this->_key($key), $value, $this->_configs['duration']);
+	public function set($key, $value, $custom_ttl = false) {
+		$ttl = $custom_ttl !== false ? $custom_ttl : $this->_configs['duration'];
+		
+		return $this->connection->set($this->_key($key), $value, $ttl);
 	}
 	
 	/**
@@ -129,6 +132,19 @@ class MemcachedEngine extends CacheEngine {
 	 */
 	public function delete($key) {
 		$this->connection->delete($this->_key($key));
+	}
+	
+	/**
+	 * Adiciona um valor a uma chave do cache
+	 *
+	 * @param	string		$key		Chave do cache
+	 * @param	mixed		$value		Valor a adicionar a chave
+	 * @param	int			$ttl		Tempo de vida do cache, em segundos
+	 *
+	 * @return boolean
+	 */
+	public function add($key, $value, $ttl = 3) {
+		return $this->connection->add($this->_key($key), $value, $ttl);
 	}
 	
 	/**
