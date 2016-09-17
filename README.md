@@ -176,7 +176,7 @@ use ZLX\Cache\CacheEngine;
 		parent::__construct($config);	
 	}
 	
-	public function set($key, $value) {
+	public function set($key, $value, $custom_ttl = false) {
 		// Lógica de salvamento de valores no cache	
 	}
 	
@@ -190,6 +190,10 @@ use ZLX\Cache\CacheEngine;
 	
 	public function clear($ignore_prevents) {
 		// Lógica para reset do cache	
+	}
+	
+	public function add($key, $value, $ttl = 3) {
+		// Lógica para add no cache
 	}
 }
 ```
