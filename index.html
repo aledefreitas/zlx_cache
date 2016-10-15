@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Zlx cache by aledefreitas</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Zlx cache</h1>
+        <p>Classe para ajudar na utilização de Cache em sites</p>
+
+        <p class="view"><a href="https://github.com/aledefreitas/zlx_cache">View the Project on GitHub <small>aledefreitas/zlx_cache</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/aledefreitas/zlx_cache/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/aledefreitas/zlx_cache/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/aledefreitas/zlx_cache">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="zlx-cache" class="anchor" href="#zlx-cache" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ZLX Cache</h1>
+
+<h1></h1>
+
+<p>ZLX Cache v1.0.0 - 11 de Janeiro de 2016
+ZLX Cache v1.1.0 - 16 de Setembro de 2016</p>
+
+<p>por Alexandre de Freitas Caetano
+<a href="http://github.com/aledefreitas/">http://github.com/aledefreitas/</a></p>
+
+<p>baseado em CakePHP Cache
+<a href="http://github.com/cakephp/cakephp/">http://github.com/cakephp/cakephp/</a></p>
+
+<h3>
+<a id="introdução" class="anchor" href="#introdu%C3%A7%C3%A3o" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introdução</h3>
+
+<hr>
+
+<p>A classe ZLX\Cache traz uma forma elegante de utilizar cache na aplicação, facilitando a implementação de sistemas de Cache em sua aplicação.
+Com esta classe é possível criar várias instâncias separadas de Cache para sua aplicação, sem forçar que sua aplicação se restrinja a apenas uma implementação de cache.
+Você poderá alterar ou criar engines de cache com sua própria lógica, sobre-escrevendo a classe CacheEngine.
+Também pode apagar dados de várias instâncias de uma só vez, através dos namespaces atribuídos às instâncias!</p>
+
+<h3>
+<a id="instalação" class="anchor" href="#instala%C3%A7%C3%A3o" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Instalação</h3>
+
+<hr>
+
+<p>É possível instalar o ZLX\Cache através do Composer. Adicione no seu <code>composer.json</code>:</p>
+
+<pre><code>{
+   "repositories": [
+       {
+           "url": "https://github.com/aledefreitas/zlx_cache.git",
+           "type": "git"
+       }
+   ],
+   "require": {
+       "aledefreitas/zlx_cache": "*"
+   }
+}
+</code></pre>
+
+<p>Ou então você pode baixar a release que quiser no <a href="https://github.com/aledefreitas/zlx_cache/releases">nosso repositório</a>, e fazer um require no inicio de seu código:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-k">require_once</span>(<span class="pl-s"><span class="pl-pds">"</span>path/to/zlx/cache/Cache.php<span class="pl-pds">"</span></span>);</span></pre></div>
+
+<h3>
+<a id="requerimentos" class="anchor" href="#requerimentos" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requerimentos</h3>
+
+<hr>
+
+<ul>
+<li><strong><em>PHP 5.6+</em></strong></li>
+<li><strong><em>Memcached</em></strong></li>
+</ul>
+
+<h3>
+<a id="modo-de-uso" class="anchor" href="#modo-de-uso" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Modo de uso</h3>
+
+<hr>
+
+<p>Abaixo citaremos as funções que são utilizadas no gerenciamento do cache na sua aplicação.
+Primeiramente, iniciamos o Cache, no início de seu código de inicialização da aplicação:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">ZLX\Cache\Cache</span>;</span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> [ <span class="pl-s"><span class="pl-pds">'</span>prefix<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>cache_prefix<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>instances<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [</span>
+<span class="pl-s1">                    <span class="pl-c">// Utilizamos default, pois é a configuração padrão do cache</span></span>
+<span class="pl-s1">                    <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [  <span class="pl-s"><span class="pl-pds">'</span>engine<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>memcached<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                                    <span class="pl-s"><span class="pl-pds">'</span>duration<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>+10 minutes<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                                    <span class="pl-s"><span class="pl-pds">'</span>groups<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Posts<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Comments<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ],</span>
+<span class="pl-s1">                                    <span class="pl-s"><span class="pl-pds">'</span>prevent_clear<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ] ]</span>
+<span class="pl-s1">                ]</span>
+<span class="pl-s1">            ];</span>
+<span class="pl-s1">    <span class="pl-c">// Iniciamos o cache</span></span>
+<span class="pl-s1">    <span class="pl-c1">Cache</span><span class="pl-k">::</span>init(<span class="pl-smi">$config</span>);</span></pre></div>
+
+<h4>
+<a id="atenção" class="anchor" href="#aten%C3%A7%C3%A3o" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Atenção!</h4>
+
+<p>Tenha muita atenção ao setar a configuração 'prefix' na inicialização do Cache. Ela é o prefixo para as entradas de cache de seu site,
+e não deve ser duplicada com nenhum outro prefixo igual em qualquer outro site no servidor inteiro.</p>
+
+<h4>
+<a id="criando-instâncias-on-the-fly-em-tempo-de-execução" class="anchor" href="#criando-inst%C3%A2ncias-on-the-fly-em-tempo-de-execu%C3%A7%C3%A3o" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Criando instâncias on-the-fly (em tempo de execução)</h4>
+
+<p>Podemos criar instancias novas programáticamente em tempo de execução com a função <code>Cache::create()</code>:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">ZLX\Cache\Cache</span>;</span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> [ <span class="pl-s"><span class="pl-pds">'</span>engine<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>memcached<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>duration<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>+10 minutes<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>groups<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Posts<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Comments<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ],</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>prevent_clear<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ] </span>
+<span class="pl-s1">            ];</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c1">Cache</span><span class="pl-k">::</span>create(<span class="pl-s"><span class="pl-pds">'</span>meu_cache<span class="pl-pds">'</span></span>, <span class="pl-smi">$config</span>);</span></pre></div>
+
+<h4>
+<a id="atributos-das-instâncias" class="anchor" href="#atributos-das-inst%C3%A2ncias" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Atributos das instâncias:</h4>
+
+<ul>
+<li>'engine': É o Engine a ser utilizado. Ex.: 'memcached'</li>
+<li>'duration': Duração das chaves de cache. Ex.: '+40 minutes'</li>
+<li>'prefix': Prefixo da instância. Ex.: 'prefixo_zlx'</li>
+<li>'namespaces': Array contendo os namespaces ao qual a instância pertence. Ex.: [ 'Posts', 'Admin' ]</li>
+<li>'groups': Array contendo os grupos da instância. Ex.: [ 'Comments', 'Session', 'Users' ]</li>
+<li>'prevent_clear': Array contendo os grupos que são ignorados quando o método clear(false)</li>
+</ul>
+
+<p>Após inicializado, poderemos utilizar todas suas funcionalidades:</p>
+
+<h4>
+<a id="atenção-1" class="anchor" href="#aten%C3%A7%C3%A3o-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Atenção!</h4>
+
+<p>Todas as funções tem como padrão a instância 'default'. Caso seja omitido este parâmetro, a instância utilizada será a 'default'. Você pode
+especificar o parametro para utilizar outra instância.</p>
+
+<h4>
+<a id="setkey-value--instance--default" class="anchor" href="#setkey-value--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>set(key, value [, instance = 'default')</h4>
+
+<p>Salva uma chave e seu valor no cache. Retorna <code>(boolean)</code> com true quando foi salvo com sucesso, e false quando não foi salvo com sucesso.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>set(<span class="pl-s"><span class="pl-pds">'</span>chave<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>teste de valor<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="getkey--instance--default" class="anchor" href="#getkey--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>get(key [, instance = 'default')</h4>
+
+<p>Retorna o valor de uma chave do cache. Retorna <code>(boolean) false</code> caso não seja encontrado nada.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>get(<span class="pl-s"><span class="pl-pds">'</span>chave<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="deletekey--instance--default" class="anchor" href="#deletekey--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>delete(key [, instance = 'default')</h4>
+
+<p>Apaga o valor de uma chave do cache. Retorna <code>(boolean)</code> com true caso delete, e false caso não delete.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>delete(<span class="pl-s"><span class="pl-pds">'</span>chave<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="rememberkey-callable--instance--default" class="anchor" href="#rememberkey-callable--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>remember(key, callable [, instance = 'default')</h4>
+
+<p>Pesquisa o valor da chave requisitado, caso o mesmo não exista, executa a função <code>callable</code> e salva na chave requisitada (e retorna) seu retorno.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>remember(<span class="pl-s"><span class="pl-pds">'</span>chave<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>() {</span>
+<span class="pl-s1">        <span class="pl-c">// Inclua sua lógica aqui</span></span>
+<span class="pl-s1">        <span class="pl-k">return</span> <span class="pl-smi">$retorno</span>;</span>
+<span class="pl-s1">        }, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="cleargroupgroup--instance--default" class="anchor" href="#cleargroupgroup--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>clearGroup(group [, instance = 'default')</h4>
+
+<p>Invalida todas as chaves de um grupo determinado na instancia escolhida</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>clearGroup(<span class="pl-s"><span class="pl-pds">'</span>Grupo<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="clear-ignore_prevents--false--instance--default" class="anchor" href="#clear-ignore_prevents--false--instance--default" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>clear([ ignore_prevents = false [, instance = 'default')</h4>
+
+<p>Apaga todas as entradas de cache da instancia. Caso ignore_prevents seja setado como <code>true</code>, ignorará até os grupos em 'prevent_clear'.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>clear(<span class="pl-c1">false</span>, <span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h4>
+<a id="clearnamespacenamespace" class="anchor" href="#clearnamespacenamespace" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>clearNamespace(namespace)</h4>
+
+<p>Invoca o método clear() de todas as instâncias sob o namespace escolhido</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>clearNamespace(<span class="pl-s"><span class="pl-pds">'</span>Namespace<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h3>
+<a id="funcionamento-dos-grupos-de-cache" class="anchor" href="#funcionamento-dos-grupos-de-cache" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Funcionamento dos Grupos de Cache</h3>
+
+<hr>
+
+<p>A funcionalidade de grupos de Cache no ZLX\Cache é interessante para invalidar/resetar apenas entradas de cache em um grupo específico.
+Suponhamos que em determinado momento da sua lógica, você cria uma entrada de Cache sob o grupo 'Posts', para guardar os dados de uma postagem
+específica:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">        <span class="pl-c1">Cache</span><span class="pl-k">::</span>set(<span class="pl-s"><span class="pl-pds">"</span>Posts.data.<span class="pl-pds">"</span></span><span class="pl-k">.</span><span class="pl-smi">$id_post</span>, [ <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Meus dados do post<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>body<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>Corpo do meu post<span class="pl-pds">"</span></span> ]);</span></pre></div>
+
+<p>Ao utilizar o padrão 'Grupo.chave' para salvar, deletar, ou retornar uma chave (<strong><em>set()</em></strong>,<strong>get()</strong><em>,</em><em>delete()</em><strong>,</strong>remember()***), caso
+o grupo esteja no array de grupos da sua instância, ele será salvo sob este grupo.</p>
+
+<p>Ao invocar o método<strong>clearGroup()</strong>*, invalidamos todas as chaves sob este grupo, de forma que na próxima requisição de qualquer chave deste
+grupo, ela não será encontrada no cache, e portanto será renovada!</p>
+
+<h3>
+<a id="funcionamento-dos-namespaces" class="anchor" href="#funcionamento-dos-namespaces" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Funcionamento dos Namespaces</h3>
+
+<hr>
+
+<p>É muito parecido com o funcionamento de grupos, porém funciona num escopo acima dos grupos. Os grupos pertencem à instancia, e as instâncias pertencem aos 
+namespaces. 
+Quando o método<strong>clearNamespace()</strong>* for invocado, ele irá executar um clear (<strong><em>ignorando os prevents</em></strong>) em todas as instâncias pertencentes ao
+namespace a ser resetado.</p>
+
+<h3>
+<a id="criando-e-utilizando-uma-engine-personalizada" class="anchor" href="#criando-e-utilizando-uma-engine-personalizada" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Criando e utilizando uma Engine personalizada</h3>
+
+<hr>
+
+<p>O ZLX\Cache permite que sejam criadas Engines personalizadas para que possa-se desenvolver as lógicas necessárias do programador
+através de abstração da classe ZLX\Cache\CacheEngine!</p>
+
+<p>Abaixo segue o exemplo de uma classe personalizada:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">ZLX\Cache\CacheEngine</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">class</span> <span class="pl-en">CustomCacheEngine</span> <span class="pl-k">extends</span> <span class="pl-e">CacheEngine</span> {</span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-smi">$_defaultConfigs</span>; <span class="pl-c">// Configurações padrões</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-c1">__construct</span>(<span class="pl-k">array</span> <span class="pl-smi">$config</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica do método construtor</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">_configs</span> <span class="pl-k">=</span> <span class="pl-c1">array_merge</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">_defaultConfigs</span>, <span class="pl-smi">$config</span>); <span class="pl-c">// Merge das configurações padrões. É necessário caso haja configurações padrões.</span></span>
+<span class="pl-s1">        <span class="pl-k">parent</span><span class="pl-k">::</span>__construct(<span class="pl-smi">$config</span>);   </span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">set</span>(<span class="pl-smi">$key</span>, <span class="pl-smi">$value</span>, <span class="pl-smi">$custom_ttl</span> <span class="pl-k">=</span> <span class="pl-c1">false</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica de salvamento de valores no cache    </span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">get</span>(<span class="pl-smi">$key</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica de busca de valores no cache </span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">delete</span>(<span class="pl-smi">$key</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica de apagamento de valor no cache  </span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">clear</span>(<span class="pl-smi">$ignore_prevents</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica para reset do cache  </span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">add</span>(<span class="pl-smi">$key</span>, <span class="pl-smi">$value</span>, <span class="pl-smi">$ttl</span> <span class="pl-k">=</span> <span class="pl-c1">3</span>) {</span>
+<span class="pl-s1">        <span class="pl-c">// Lógica para add no cache</span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1">}</span></pre></div>
+
+<p>Então, será possível adicionar instâncias desta classe de duas maneiras diferentes:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">    <span class="pl-c">// Através da inicialização do Cache</span></span>
+<span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">ZLX\Cache\Cache</span>;</span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> [ <span class="pl-s"><span class="pl-pds">'</span>prefix<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>cache_prefix<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>instances<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [</span>
+<span class="pl-s1">                    <span class="pl-s"><span class="pl-pds">'</span>meu_cache<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [    <span class="pl-s"><span class="pl-pds">'</span>engine<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>CustomCacheEngine<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                                        <span class="pl-s"><span class="pl-pds">'</span>duration<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>+10 minutes<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                                        <span class="pl-s"><span class="pl-pds">'</span>groups<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Posts<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Comments<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ],</span>
+<span class="pl-s1">                                        <span class="pl-s"><span class="pl-pds">'</span>prevent_clear<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ] ]</span>
+<span class="pl-s1">                ]</span>
+<span class="pl-s1">            ];</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c1">Cache</span><span class="pl-k">::</span>init(<span class="pl-smi">$config</span>);</span></pre></div>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1">    <span class="pl-c">// Através da inicialização do Cache</span></span>
+<span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">ZLX\Cache\Cache</span>;</span>
+<span class="pl-s1">    <span class="pl-smi">$config</span> <span class="pl-k">=</span> [ <span class="pl-s"><span class="pl-pds">'</span>engine<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>CustomCacheEngine<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>duration<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>+10 minutes<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>groups<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Posts<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Comments<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ],</span>
+<span class="pl-s1">                <span class="pl-s"><span class="pl-pds">'</span>prevent_clear<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [ <span class="pl-s"><span class="pl-pds">'</span>Session<span class="pl-pds">'</span></span> ] </span>
+<span class="pl-s1">            ];</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c1">Cache</span><span class="pl-k">::</span>create(<span class="pl-s"><span class="pl-pds">'</span>meu_cache<span class="pl-pds">'</span></span>, <span class="pl-smi">$config</span>);</span></pre></div>
+
+<p>Desta forma, você pode criar engines que utilizam a lógica que for necessária implementada.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/aledefreitas">aledefreitas</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
