@@ -234,11 +234,23 @@ abstract class CacheEngine {
 	 * Retorna a chave no cache para a última entrada que sofreu clear no cache
 	 *
 	 * @param	string		$key		
+	 * @param	string		$group		Grupo de cache a que a chave pertence
 	 *
 	 * @return string
 	 */
-	public function getGroupClearedKey($key) {
-		return $this->_key($key, true);
+	private function readLastClearedData($key, $group) {
+		$_returnData = false;
+		
+		if(isset($this->groups[$group]))
+			for($_clear_count = $this->groups[$group] - 1; $_clear_count >= 0; $_clear_count--):
+				$clearedData = parent::read($group."_".$_clear_count."_".$key);
+				$this->delete($group."_".$_clear_count."_".$key);
+				
+				if($clearedData !== false and $_returnData === false)
+					$_returnData = $clearedData;
+			endfor;
+			
+		return $_returnData;
 	}
 	
 	/**

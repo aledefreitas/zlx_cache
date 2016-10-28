@@ -288,7 +288,14 @@ class Cache {
 	 * @var boolean
 	 */
 	private static $_enabled = true;
-		
+
+	/**
+	 * Número de threads máximo para execução simultanea de locks de execução
+	 *
+	 * @var int
+	 */
+	private static $number_of_threads = 4;
+			
 	/**
 	 * Função inicializadora do ZLX Cache.
 	 *
@@ -440,6 +447,7 @@ class Cache {
 			return false;
 		
 		$success = $engine->set($key, $value);
+		$engine->set($key."_stale_data", $value, max(300, round($engine->_configs['duration']*0.5)));
 
 		if(!$success)
 			self::_throwError(sprintf("Não foi possível salvar '%s' na instancia de '%s' (%s)", $key, $instance, get_class($engine)));
@@ -452,35 +460,30 @@ class Cache {
 	 *
 	 * @param	string		$key		Chave a ser retornada do cache
 	 * @param	string		$instance	Instância de Cache a utilizar
+	 * @param	boolean		$use_stale	Boolean que determina se usará stale cache ou não
 	 *
 	 * @return mixed
 	 */
-	public static function get($key, $instance = "default") {
+	public static function get($key, $instance = "default", $use_stale = true) {
 		$engine = self::instance($instance);
 		
 		$value = $engine->get($key);
-		
-		if(!$value):
-			$stale = $engine->getStaleData($key);
 
+		if(!$value and $use_stale === true):
+			$stale = $engine->getStaleData($key['built']);
+			
 			if($stale)
 				return $stale;
-
-			$stale_key = $engine->getGroupClearedKey($key);
+							
+			$stale_data = $engine->readLastClearedData($key['original'], $key['group']);
 			
-			if(!$stale_key)
-				return false;
+			if($stale_data)
+				$engine->setStaleData($key['built'], $stale_data);
 				
-			$stale_data = $engine->get($stale_key);
-			
-			if($stale_data):
-				$engine->setStaleData($key, $stale_data);
-			endif;
-			
 			return false;
 		endif;
-		
-		return $value;			
+
+		return $value;	
 	}
 	
 	/**
@@ -523,17 +526,24 @@ class Cache {
 
         if ($existing !== false)
             return $existing;
-		
-		$lock_acquired = self::acquire_lock($key, 3, $instance);
 
-		$max_tries = 300;
+		$lock_key = explode(".", $key);
+		// Forçamos o lock_key a sempre ser um GRUPO [.SUBGRUPO [.KEY do cache do Site, invés da chave completa
+		if($lock_key !== false)
+			$lock_key = implode(".", array_slice($lock_key, 0, 3));
+		else
+			$lock_key = $key;
+		
+		$lock_acquired = self::acquire_lock($lock_key, 10, $instance);
+
+		$max_tries = 100;
 		$tries = 0;
 
 		while(!$lock_acquired and $tries < $max_tries):
-			$lock_acquired = self::acquire_lock($key, 3, $instance);
+			$lock_acquired = self::acquire_lock($lock_key, 10, $instance);
 
 			$tries++;
-			usleep(10000);
+			usleep(100000);
 		endwhile;
 		
 		$engine = self::instance($instance);
@@ -545,7 +555,8 @@ class Cache {
         $results = call_user_func($callable);
         self::set($key, $results, $instance);
 
-		self::release_lock($key, $instance);
+		if($lock_acquired !== false)
+			self::release_lock($lock_acquired, $lock_key, $config);
 
         return $results;
 	}
@@ -576,19 +587,28 @@ class Cache {
 	 * @return boolean
 	 */
 	private static function acquire_lock($key, $ttl = 3, $instance = 'default') {
-		return self::add($key."__lock__", 1, $instance, $ttl);
+		for($thread = 1; $thread <= self::$number_of_threads; $thread++)
+			if(self::add($key."__lock_thread_".$thread."__", 1, $instance, $ttl))
+				return (int)$thread;
+		
+		return false;
+
+		return ;
 	}
 
 	/**
 	 * Solta o lock de execução de escrita no cache para uma chave única
 	 *
+	 * @param	int			$thread		Número da thread de lock
 	 * @param	string		$key		Chave em que será feito o lock
 	 * @param	string		$instance		Config do cache a ser utilizada
 	 *
 	 * @return boolean
 	 */
-	private static function release_lock($key, $instance = 'default') {
-		return self::delete($key."__lock__", $instance);
+	private static function release_lock($thread, $key, $config = 'default') {
+        $engine = parent::engine($config);
+
+		return $engine->delete($key."__lock_thread_".$thread."__", 1, $ttl);			
 	}
 
 	
