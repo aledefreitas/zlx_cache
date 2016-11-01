@@ -294,7 +294,7 @@ class Cache {
 	 *
 	 * @var int
 	 */
-	private static $number_of_threads = 4;
+	private static $number_of_threads = 1;
 			
 	/**
 	 * Função inicializadora do ZLX Cache.
@@ -537,13 +537,13 @@ class Cache {
 		else
 			$lock_key = $key;
 		
-		$lock_acquired = self::acquire_lock($lock_key, 10, $instance);
+		$lock_acquired = self::acquire_lock($lock_key, 5, $instance);
 
-		$max_tries = 100;
+		$max_tries = 50;
 		$tries = 0;
 
 		while(!$lock_acquired and $tries < $max_tries):
-			$lock_acquired = self::acquire_lock($lock_key, 10, $instance);
+			$lock_acquired = self::acquire_lock($lock_key, 5, $instance);
 
 			$tries++;
 			usleep(100000);
@@ -574,7 +574,7 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	public static function add($key, $value, $instance = 'default', $ttl = 3) {
+	public static function add($key, $value, $instance = 'default', $ttl = 5) {
 		$engine = self::instance($instance);
 		
 		return $engine->add($key, $value, $ttl);
@@ -589,7 +589,7 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	private static function acquire_lock($key, $ttl = 3, $instance = 'default') {
+	private static function acquire_lock($key, $ttl = 5, $instance = 'default') {
 		for($thread = 1; $thread <= self::$number_of_threads; $thread++)
 			if(self::add($key."__lock_thread_".$thread."__", 1, $instance, $ttl))
 				return (int)$thread;
