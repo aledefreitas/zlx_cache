@@ -552,8 +552,13 @@ class Cache {
 		$engine = self::instance($instance);
         $existing = $engine->get($key);
 
-        if ($existing !== false)
+        if ($existing !== false):
+			if($lock_acquired !== false):
+				self::release_lock($lock_acquired, $lock_key, $config);
+			endif;
+			
             return $existing;
+		endif;
 
         $results = call_user_func($callable);
         self::set($key, $results, $instance);
