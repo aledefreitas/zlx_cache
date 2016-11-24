@@ -259,7 +259,9 @@ class Cache {
 	 *
 	 * @var array
 	 */
-	private static $_engines = [ "memcached" =>	"MemcachedEngine" ];
+	private static $_engines = [ 	"memcached" =>	"MemcachedEngine",
+									"memcache" => "MemcacheEngine",
+									"redis" => "RedisEngine" ];
 
 	/**
 	 * Configurações padrões para a classe ZLX Cache
