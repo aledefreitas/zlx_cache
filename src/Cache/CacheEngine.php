@@ -16,6 +16,8 @@
 namespace ZLX\Cache;
 
 require_once(__DIR__ . "/Engine/MemcachedEngine.php");
+require_once(__DIR__ . "/Engine/MemcacheEngine.php");
+require_once(__DIR__ . "/Engine/RedisEngine.php");
 require_once(__DIR__ . "/Engine/NullEngine.php");
 
 /**
