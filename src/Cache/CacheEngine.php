@@ -240,7 +240,7 @@ abstract class CacheEngine {
 	 *
 	 * @return string
 	 */
-	private function readLastClearedData($key, $group) {
+	public function readLastClearedData($key, $group) {
 		$_returnData = false;
 		
 		if(isset($this->groups[$group]))
