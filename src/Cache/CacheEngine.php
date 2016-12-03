@@ -236,12 +236,14 @@ abstract class CacheEngine {
 	 * Retorna a chave no cache para a última entrada que sofreu clear no cache
 	 *
 	 * @param	string		$key		
-	 * @param	string		$group		Grupo de cache a que a chave pertence
 	 *
 	 * @return string
 	 */
-	public function readLastClearedData($key, $group) {
+	public function readLastClearedData($key) {
 		$_returnData = false;
+		
+		$group = explode(".", $key);
+		$group = @$group[0];
 		
 		if(isset($this->groups[$group]))
 			for($_clear_count = $this->groups[$group] - 1; $_clear_count >= 0; $_clear_count--):
@@ -263,7 +265,7 @@ abstract class CacheEngine {
 	 * @return mixed
 	 */
 	public function getStaleData($key) {
-		return $this->get($key."_stale_data");
+		return $this->get($this->_key($key."_stale_data"));
 	}
 	
 	/**
@@ -275,7 +277,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	public function setStaleData($key, $value) {
-		$this->set($key."_stale_data", $value, max(300, round($this->_configs['duration']*0.5)));
+		$this->set($this->_key($key."_stale_data"), $value, 300);
 	}
 	
 	/**

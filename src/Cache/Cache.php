@@ -449,7 +449,7 @@ class Cache {
 			return false;
 		
 		$success = $engine->set($key, $value);
-		$engine->set($key."_stale_data", $value, max(300, round($engine->_configs['duration']*0.5)));
+		$engine->set($key."_stale_data", $value, 300);
 
 		if(!$success)
 			self::_throwError(sprintf("Não foi possível salvar '%s' na instancia de '%s' (%s)", $key, $instance, get_class($engine)));
@@ -472,15 +472,15 @@ class Cache {
 		$value = $engine->get($key);
 
 		if(!$value and $use_stale === true):
-			$stale = $engine->getStaleData($key['built']);
+			$stale = $engine->getStaleData($key);
 			
 			if($stale)
 				return $stale;
-							
-			$stale_data = $engine->readLastClearedData($key['original'], $key['group']);
+
+			$stale_data = $engine->readLastClearedData($key);
 			
 			if($stale_data)
-				$engine->setStaleData($key['built'], $stale_data);
+				$engine->setStaleData($key, $stale_data);
 				
 			return false;
 		endif;
@@ -556,7 +556,7 @@ class Cache {
 
         if ($existing !== false):
 			if($lock_acquired !== false):
-				self::release_lock($lock_acquired, $lock_key, $config);
+				self::release_lock($lock_acquired, $lock_key, $instance);
 			endif;
 			
             return $existing;
@@ -566,7 +566,7 @@ class Cache {
         self::set($key, $results, $instance);
 
 		if($lock_acquired !== false)
-			self::release_lock($lock_acquired, $lock_key, $config);
+			self::release_lock($lock_acquired, $lock_key, $instance);
 
         return $results;
 	}
@@ -615,10 +615,8 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	private static function release_lock($thread, $key, $config = 'default') {
-        $engine = parent::engine($config);
-
-		return $engine->delete($key."__lock_thread_".$thread."__", 1, $ttl);			
+	private static function release_lock($thread, $key, $instance = 'default') {
+		return self::delete($key."__lock_thread_".$thread."__", $instance);
 	}
 
 	
