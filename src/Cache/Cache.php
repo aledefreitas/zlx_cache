@@ -471,7 +471,7 @@ class Cache {
 		
 		$value = $engine->get($key);
 
-		if(!$value and $use_stale === true):
+		if($value === false and $use_stale === true):
 			$stale = $engine->getStaleData($key);
 			
 			if($stale)
