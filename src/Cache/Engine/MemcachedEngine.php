@@ -2,8 +2,11 @@
 /**
  * ZLX Cache
  *
- * Módulo de cache para os sites dos servidores da PROJECT / ZLX. 
- * Feito afim de facilitar e padronizar a geração de caches nos sites com uma API simples.
+ * Cache module for PHP sites
+ * Made to make it easier to use cache on websites with a simple API
+ *
+ * Módulo de cache para sites PHP
+ * Feito para facilitar o uso de cache em websites com uma API simples
  *
  * @license		MIT
  * 
