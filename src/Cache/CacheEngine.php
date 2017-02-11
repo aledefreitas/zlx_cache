@@ -248,10 +248,9 @@ abstract class CacheEngine {
 		if(isset($this->groups[$group]))
 			for($_clear_count = $this->groups[$group] - 1; $_clear_count >= 0; $_clear_count--):
 				$clearedData = parent::read($group."_".$_clear_count."_".$key);
-				$this->delete($group."_".$_clear_count."_".$key);
 				
-				if($clearedData !== false and $_returnData === false)
-					$_returnData = $clearedData;
+				if($clearedData !== false)
+					return $clearedData;
 			endfor;
 			
 		return $_returnData;
