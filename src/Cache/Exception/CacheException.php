@@ -18,3 +18,14 @@
  */
 namespace ZLX\Cache\Exception;
 
+use Psr\Cache\CacheException as PSR_Cache_Exception;
+use \Exception;
+
+/**
+ * Class to handle thrown Cache implementation Exceptions
+ *
+ * Classe para lidar com Exceptions da implementação Cache
+ */
+class CacheException extends Exception implements PSR_Cache_Exception {
+	
+}

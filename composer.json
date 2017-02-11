@@ -12,8 +12,5 @@
             "email": "alexandrefc2@hotmail.com"
         }
     ],
-    "minimum-stability": "stable",
-	"autoload": {
-		"psr-4": { "ZLX\\Cache\\": "src/Cache/" }
-	}
+    "minimum-stability": "stable"
 }

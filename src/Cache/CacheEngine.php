@@ -18,10 +18,7 @@
  */
 namespace ZLX\Cache;
 
-require_once(__DIR__ . "/Engine/MemcachedEngine.php");
-require_once(__DIR__ . "/Engine/MemcacheEngine.php");
-require_once(__DIR__ . "/Engine/RedisEngine.php");
-require_once(__DIR__ . "/Engine/NullEngine.php");
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Classe abstrata das Engines de Cache
@@ -98,7 +95,7 @@ require_once(__DIR__ . "/Engine/NullEngine.php");
  * @param	array	$config		Configurações da Engine
  * @return	void
  */
-abstract class CacheEngine {
+abstract class CacheEngine implements CacheItemPoolInterface {
 	/** 
 	 * Array contendo as configurações padrões da Engine
 	 * @var array

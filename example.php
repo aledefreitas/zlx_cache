@@ -1,4 +1,5 @@
 ﻿<?php
+	require_once(__DIR__."/vendor/autoload.php");
 	require_once(__DIR__."/src/Cache/Cache.php");
 	
 	use ZLX\Cache\Cache;
