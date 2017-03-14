@@ -2,11 +2,11 @@
 /**
  * ZLX Cache
  *
- * Módulo de cache para os sites dos servidores da PROJECT / ZLX. 
+ * Módulo de cache para os sites dos servidores da PROJECT / ZLX.
  * Feito afim de facilitar e padronizar a geração de caches nos sites com uma API simples.
  *
  * @license		MIT
- * 
+ *
  * @link		http://www.github.com/aledefreitas/zlx_cache/
  *
  * @author 		Alexandre de Freitas Caetano <alexandrefc2@hotmail.com>
@@ -31,11 +31,11 @@ class RedisEngine extends CacheEngine {
 									"host" => "127.0.0.1",
 									"port" => "6379",
 									"persistent" => false ];
-	
+
 	/**
 	 * Array contendo os serializers disponíveis da classe
 	 * @var array
-	 */				
+	 */
 	private $_serializers = [ 	"php" => Redis::SERIALIZER_PHP,
 								"igbinary" => Redis::SERIALIZER_IGBINARY,
 								"none" => Redis::SERIALIZER_NONE ];
@@ -45,7 +45,7 @@ class RedisEngine extends CacheEngine {
 	 * @var boolean | \Redis
 	 */
 	private $connection = false;
-	
+
 	/**
 	 * Método construtor
 	 * Escolhe o serializador e conecta ao redis
@@ -60,9 +60,9 @@ class RedisEngine extends CacheEngine {
 
 		$this->connect();
 
-		parent::__construct($this->_configs);				
+		parent::__construct($this->_configs);
 	}
-	
+
 	/**
 	 * Conecta a um servidor de redis
 	 *
@@ -71,7 +71,7 @@ class RedisEngine extends CacheEngine {
 	private function connect() {
 		if(!$this->connection):
 			$this->connection = new Redis();
-	
+
 			if($this->_configs['persistent'] === true):
 				$this->connection->pconnect($this->_configs['host'], $this->_configs['port']);
 			else:
@@ -81,7 +81,7 @@ class RedisEngine extends CacheEngine {
 			$this->connection->setOption(Redis::OPT_SERIALIZER, $this->_serializers[$this->_configs['serializer']]);
 		endif;
 	}
-	
+
 	/**
 	 * Desconecta de um servidor de redis
 	 *
@@ -90,12 +90,12 @@ class RedisEngine extends CacheEngine {
 	public function disconnect() {
 		if($this->connection)
 			$this->connection->close();
-			
+
 		$this->connection = false;
 	}
-	
+
 	/**
-	 * Seta um valor dentro de uma chave no redis 
+	 * Seta um valor dentro de uma chave no redis
 	 *
 	 * @param	string		$key			Chave a ser setada no cache
 	 * @param	mixed		$value			Valor a ser salvo nesta chave
@@ -105,10 +105,10 @@ class RedisEngine extends CacheEngine {
 	 */
 	public function set($key, $value, $custom_ttl = false) {
 		$ttl = $custom_ttl !== false ? $custom_ttl : $this->_configs['duration'];
-		
+
 		return $this->connection->set($this->_key($key), $value, $ttl);
 	}
-	
+
 	/**
 	 * Retorna o valor de uma chave no redis
 	 *
@@ -119,10 +119,10 @@ class RedisEngine extends CacheEngine {
 	public function get($key) {
 		$data = $this->connection->get($this->_key($key));
 		if(!$data) return false;
-		
+
 		return $data;
 	}
-	
+
 	/**
 	 * Deleta uma chave no redis
 	 *
@@ -131,7 +131,7 @@ class RedisEngine extends CacheEngine {
 	public function delete($key) {
 		$this->connection->delete($this->_key($key));
 	}
-	
+
 	/**
 	 * Adiciona um valor a uma chave do cache
 	 *
@@ -144,7 +144,7 @@ class RedisEngine extends CacheEngine {
 	public function add($key, $value, $ttl = 3) {
 		return $this->connection->sAdd($this->_key($key), $value);
 	}
-	
+
 	/**
 	 * Apaga todas as entradas de cache do redis, com exceção das prevenidas de clear automático
 	 *
