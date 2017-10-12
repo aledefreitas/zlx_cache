@@ -9,7 +9,7 @@
  * Feito para facilitar o uso de cache em websites com uma API simples
  *
  * @license		MIT
- * 
+ *
  * @link		http://www.github.com/aledefreitas/zlx_cache/
  *
  * @author 		Alexandre de Freitas Caetano <alexandrefc2@hotmail.com>
@@ -26,17 +26,17 @@ require_once(__DIR__ . "/Engine/RedisEngine.php");
 require_once(__DIR__ . "/Engine/NullEngine.php");
 require_once(__DIR__ . "/Exception/CacheException.php");
 
-/** 
+/**
  * # ZLX Cache
  * ===============
  * ZLX Cache v1.0.0 - 11 de Janeiro de 2016
- * 
+ *
  * por Alexandre de Freitas Caetano
  * http://github.com/aledefreitas/
  *
  * baseado em CakePHP Cache
  * http://github.com/cakephp/cakephp/
- * 
+ *
  *
  * ### Introdução
  * ---------
@@ -47,7 +47,7 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  *
  *
  * ### Instalação
- * --------- 
+ * ---------
  * É possível instalar o ZLX\Cache através do Composer. Adicione no seu ```composer.json```:
  * ```
  * {
@@ -103,9 +103,9 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  *		$config = [	'engine' => 'memcached',
  *					'duration' => '+10 minutes',
  *					'groups' => [ 'Posts', 'Comments', 'Session' ],
- *					'prevent_clear' => [ 'Session' ] 
+ *					'prevent_clear' => [ 'Session' ]
  *				];
- *				
+ *
  *  	Cache::create('meu_cache', $config);
  * ```
  * #### Atributos das instâncias:
@@ -182,8 +182,8 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  *
  * ### Funcionamento dos Namespaces
  * ---------
- * É muito parecido com o funcionamento de grupos, porém funciona num escopo acima dos grupos. Os grupos pertencem à instancia, e as instâncias pertencem aos 
- * namespaces. 
+ * É muito parecido com o funcionamento de grupos, porém funciona num escopo acima dos grupos. Os grupos pertencem à instancia, e as instâncias pertencem aos
+ * namespaces.
  * Quando o método ***clearNamespace()*** for invocado, ele irá executar um clear (***ignorando os prevents***) em todas as instâncias pertencentes ao
  * namespace a ser resetado.
  *
@@ -195,31 +195,31 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  * Abaixo segue o exemplo de uma classe personalizada:
  * ```php
  *	use ZLX\Cache\CacheEngine;
- *	
+ *
  * 	class CustomCacheEngine extends CacheEngine {
  *		public $_defaultConfigs; // Configurações padrões
- *			 
+ *
  *		public function __construct(array $config) {
  *			// Lógica do método construtor
  *
  *			$this->_configs = array_merge($this->_defaultConfigs, $config); // Merge das configurações padrões. É necessário caso haja configurações padrões.
- *			parent::__construct($config);	
+ *			parent::__construct($config);
  *		}
- *		
+ *
  *		public function set($key, $value) {
- *			// Lógica de salvamento de valores no cache	
+ *			// Lógica de salvamento de valores no cache
  *		}
- *		
+ *
  *		public function get($key) {
- *			// Lógica de busca de valores no cache	
+ *			// Lógica de busca de valores no cache
  *		}
- *		
+ *
  *		public function delete($key) {
- *			// Lógica de apagamento de valor no cache	
+ *			// Lógica de apagamento de valor no cache
  *		}
- *		
+ *
  *		public function clear($ignore_prevents) {
- *			// Lógica para reset do cache	
+ *			// Lógica para reset do cache
  *		}
  *	}
  * ```
@@ -236,7 +236,7 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  *											'prevent_clear' => [ 'Session' ] ]
  *					]
  *				];
- *				
+ *
  *  	Cache::init($config);
  * ```
  *
@@ -247,9 +247,9 @@ require_once(__DIR__ . "/Exception/CacheException.php");
  *		$config = [	'engine' => 'CustomCacheEngine',
  *					'duration' => '+10 minutes',
  *					'groups' => [ 'Posts', 'Comments', 'Session' ],
- *					'prevent_clear' => [ 'Session' ] 
+ *					'prevent_clear' => [ 'Session' ]
  *				];
- *				
+ *
  *  	Cache::create('meu_cache', $config);
  * ```
  *
@@ -284,15 +284,15 @@ class Cache {
 														"namespaces" => [] ]
 									]
 								];
-	
+
 	/**
 	 * Array que armazena os namespaces e as instancias de cache pertencentes aos mesmos
 	 *
 	 * @var array
 	 */
 	private static $namespaces = [];
-	
-	/** 
+
+	/**
 	 * Boolean que determina se o ZLX Cache está ligado, ou desligado.
 	 * Caso o mesmo esteja desligado, será utilizada a NullEngine, que não utiliza nenhum cache.
 	 *
@@ -306,7 +306,7 @@ class Cache {
 	 * @var int
 	 */
 	private static $number_of_threads = 1;
-			
+
 	/**
 	 * Função inicializadora do ZLX Cache.
 	 *
@@ -321,12 +321,12 @@ class Cache {
 		try {
 			 // Criamos a instância de NullEngine para quando estivermos com cache desabilitado
 			self::$_instances["_zlx_null_engine_"] = new \ZLX\Cache\Engine\NullEngine([]);
-			
+
 			// Iteramos entre o array de instâncias, adicionando as instâncias à classe
 			foreach(self::$_configs['instances'] as $instance => $config):
 				// Caso a instância criada tenha o nome reservado para NullEngine, ela será ignorada
 				if($instance == "_zlx_null_engine_") continue;
-				
+
 				// Construímos a instancia
 				self::_buildInstance(strtolower($instance), $config);
 			endforeach;
@@ -334,7 +334,7 @@ class Cache {
 			self::_throwError($e->getMessage());
 		}
 	}
-	
+
 	/**
 	 * Função utilizada para criar uma nova instância utilizável em tempo de execução.
 	 *
@@ -344,7 +344,7 @@ class Cache {
 	 *										'prefix' => 'long_cache',
 	 * 										'duration' => '+10 hours',
 	 *										'groups' => [ 'Posts', 'Comments' ] ]);
-	 *										
+	 *
 	 * ```
 	 *
 	 * @param	string		$instance_name		Nome da instância
@@ -359,26 +359,26 @@ class Cache {
 		try {
 			self::_buildInstance($instance_name, $config);
 		} catch(\Exception $e) {
-			self::_throwError($e->getMessage());	
+			self::_throwError($e->getMessage());
 		}
 	}
-	
+
 	/**
 	 * Função que envia um erro ao PHP com a mensagem desejada
 	 * Esta função envia os erros da classe ao PHP
 	 *
 	 * @param	string		$message		Mensagem de erro
 	 *
-	 * @return void 
+	 * @return void
 	 */
 	private static function _throwError($message) {
 		trigger_error("[ZLX_CACHE ERROR] ".$message, E_USER_WARNING);
 	}
-	
+
 	/**
 	 * Função que constrói uma instância de cache e a adiciona ao array de instâncias da classe.
 	 * Aceita nomes de classes, ou os nomes das opções de engines built-in da classe.
-	 * 
+	 *
 	 * Atenção: Só é possível utilizar classes personalizadas desde que as mesmas sejam filhas da ZLX\Cache\CacheEngine
 	 *
 	 * @param	string		$cache_instance		Nome da instância
@@ -392,8 +392,8 @@ class Cache {
 		// Caso exista suporte à engine enviada nas configurações, então criamos a partir dela
 		if(isset(self::$_engines[strtolower($config['engine'])])):
 			// Adicionamos o prefixo da classe de Cache ao prefixo da instância
-			$config['prefix'] = self::$_configs['prefix']."_".@$config['prefix']."_";
-			
+			$config['prefix'] = self::$_configs['prefix'].@$config['prefix'];
+
 			// Caso hajam namespaces, iteramos entre eles e salvamos a instância atual no array deste namespace
 			if(!empty($config['namespaces'])):
 				foreach($config['namespaces'] as $namespace):
@@ -401,26 +401,26 @@ class Cache {
 					self::$namespaces[$namespace] = array_unique(self::$namespaces[$namespace]);
 				endforeach;
 			endif;
-						
+
 			$class = "\ZLX\\Cache\\Engine\\".self::$_engines[strtolower($config['engine'])];
 			self::$_instances[$cache_instance] = new $class($config);
 		// Senão existir suporte built-in, tentamos utilizar a classe personalizada enviada
 		else:
 			if(!class_exists($config['engine']))
 				throw new \Exception("A Engine '".$config['engine']."' não existe.");
-			
+
 			// Criamos uma instância da classe enviada, e checamos se ela é filha de ZLX\Cache\Engine
 			$instance = new $config['engine']($config);
 			if(!($instance instanceof ZLX\Cache\CacheEngine))
 				throw new \Exception("A Engine deve ser uma extensão da classe ZLX\Cache\CacheEngine.");
-			
+
 			// Caso seja, ela é adicionada à lista de instâncias
 			self::$_instances[$cache_instance] = $instance;
-			
+
 			unset($instance);
 		endif;
 	}
-	
+
 	/**
 	 * Função que retorna uma instância salva dentro da classe
 	 *
@@ -430,15 +430,15 @@ class Cache {
 	 */
 	private static function instance($instance = "default") {
 		$instance = strtolower($instance);
-		
+
 		if(!isset(self::$_instances[$instance])):
 			self::_throwError(sprintf("Não foi possível encontrar a instância '%s', portanto o cache foi desabilitado para funções desta instância.", $instance));
 			return self::$_instances['_zlx_null_engine_'];
 		endif;
-		
+
 		return self::$_enabled?self::$_instances[$instance]:self::$_instances['_zlx_null_engine_'];
 	}
-	
+
 	/**
 	 * Função estática para setar o valor de uma chave no cache
 	 *
@@ -453,10 +453,10 @@ class Cache {
 
 		if(is_resource($value))
 			return false;
-		
+
 		if($value==="")
 			return false;
-		
+
 		$success = $engine->set($key, $value);
 		$engine->set($key."_stale_data", $value, 300);
 
@@ -465,7 +465,7 @@ class Cache {
 
 		return $success;
 	}
-	
+
 	/**
 	 * Função estática que retorna um valor de uma chave no cache
 	 *
@@ -477,26 +477,26 @@ class Cache {
 	 */
 	public static function get($key, $instance = "default", $use_stale = true) {
 		$engine = self::instance($instance);
-		
+
 		$value = $engine->get($key);
 
 		if($value === false and $use_stale === true):
 			$stale = $engine->getStaleData($key);
-			
+
 			if($stale)
 				return $stale;
 
 			$stale_data = $engine->readLastClearedData($key);
-			
+
 			if($stale_data)
 				$engine->setStaleData($key, $stale_data);
-				
+
 			return false;
 		endif;
 
-		return $value;	
+		return $value;
 	}
-	
+
 	/**
 	 * Função estática que deleta uma chave no cache
 	 *
@@ -507,7 +507,7 @@ class Cache {
 	 */
 	public static function delete($key, $instance = "default") {
 		$engine = self::instance($instance);
-		
+
 		$success = $engine->delete($key);
 		$engine->delete($key."_stale_data");
 
@@ -524,10 +524,10 @@ class Cache {
 	 */
 	public static function clear($ignore_prevents = false, $instance = "default") {
 		$engine = self::instance($instance);
-		
+
 		$engine->clear($ignore_prevents);
 	}
-		
+
 	/**
 	 * Função estática que pesquisa uma chave no cache, e caso não haja valor, cria a chave com o valor do método enviado
 	 *
@@ -547,7 +547,7 @@ class Cache {
 			$lock_key = implode(".", array_slice($lock_key, 0, 3));
 		else
 			$lock_key = $key;
-		
+
 		$lock_acquired = self::acquire_lock($lock_key, 5, $instance);
 
 		$max_tries = 50;
@@ -559,7 +559,7 @@ class Cache {
 			$tries++;
 			usleep(100000);
 		endwhile;
-		
+
 		$engine = self::instance($instance);
         $existing = $engine->get($key);
 
@@ -567,7 +567,7 @@ class Cache {
 			if($lock_acquired !== false):
 				self::release_lock($lock_acquired, $lock_key, $instance);
 			endif;
-			
+
             return $existing;
 		endif;
 
@@ -579,7 +579,7 @@ class Cache {
 
         return $results;
 	}
-	
+
 	/**
 	 * Função de ADD no cache
 	 *
@@ -592,10 +592,10 @@ class Cache {
 	 */
 	public static function add($key, $value, $instance = 'default', $ttl = 5) {
 		$engine = self::instance($instance);
-		
+
 		return $engine->add($key, $value, $ttl);
 	}
-	
+
 	/**
 	 * Tenta adquirir um lock de execução para escrita no cache para uma chave única
 	 *
@@ -609,7 +609,7 @@ class Cache {
 		for($thread = 1; $thread <= self::$number_of_threads; $thread++)
 			if(self::add($key."__lock_thread_".$thread."__", 1, $instance, $ttl))
 				return (int)$thread;
-		
+
 		return false;
 
 		return ;
@@ -628,7 +628,7 @@ class Cache {
 		return self::delete($key."__lock_thread_".$thread."__", $instance);
 	}
 
-	
+
 	/**
 	 * Função estática que invoca a função clear() de todas as instâncias contidas no namespace enviado
 	 *
@@ -645,7 +645,7 @@ class Cache {
 			endforeach;
 		endif;
 	}
-	
+
 	/**
 	 * Função estática que invoca a clearGroup da instância, invalidando o valor das entradas daquele grupo naquela instância de cache
 	 *
@@ -656,10 +656,10 @@ class Cache {
 	 */
 	public static function clearGroup($group, $instance = "default") {
 		$engine = self::instance($instance);
-		
+
 		return $engine->clearGroup($group);
 	}
-	
+
 	/**
 	 * Liga as funções de Cache
 	 *
@@ -673,7 +673,7 @@ class Cache {
 	 * Desliga as funções de Cache
 	 *
 	 * @return void
-	 */	
+	 */
 	public static function disable() {
 		self::$_enabled = false;
 	}
