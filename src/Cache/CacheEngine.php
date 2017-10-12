@@ -213,7 +213,7 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	protected function _key($key, $use_stale = false) {
-		$key = $this->sanitizeKey($key);
+		$key = strtolower($this->sanitizeKey($key));
 
 		if($group = explode(".", $key))
 			$group = $group[0];
