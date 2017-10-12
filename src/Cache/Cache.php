@@ -383,7 +383,7 @@ class Cache {
 		// Caso exista suporte à engine enviada nas configurações, então criamos a partir dela
 		if(isset(self::$_engines[strtolower($config['engine'])])):
 			// Adicionamos o prefixo da classe de Cache ao prefixo da instância
-			$config['prefix'] = self::$_configs['prefix']."_".@$config['prefix']."_";
+			$config['prefix'] = self::$_configs['prefix']@$config['prefix'];
 
 			// Caso hajam namespaces, iteramos entre eles e salvamos a instância atual no array deste namespace
 			if(!empty($config['namespaces'])):
@@ -450,7 +450,7 @@ class Cache {
 
 		$success = $engine->set($key, $value);
 		$engine->setStaleData($key, $value);
-		
+
 		if(!$success)
 			self::_throwError(sprintf("Não foi possível salvar '%s' na instancia de '%s' (%s)", $key, $instance, get_class($engine)));
 
