@@ -229,7 +229,7 @@ abstract class CacheEngine {
 				return $this->_configs['prefix'].$group."_".$this->_groups[$groupToCompare]."_".$key;
 
 
-		return $this->_configs['prefix'].$key;
+		return $this->_configs['prefix'].str_replace(".", "_", $key);
 	}
 
 	/**
