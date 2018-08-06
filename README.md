@@ -1,5 +1,4 @@
 # ZLX Cache
-===============
 [![Build Status](https://travis-ci.org/aledefreitas/zlx_cache.svg?branch=master)](https://travis-ci.org/aledefreitas/zlx_cache)
 
 ZLX Cache v1.0.0 - 11 de Janeiro de 2016
