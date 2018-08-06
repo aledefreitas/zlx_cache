@@ -2,10 +2,10 @@ language: php
 
 dist: trusty
 
+sudo: required
+
 php:
     - 7.0
-
-sudo: required
 
 services:
     - memcache
@@ -16,8 +16,8 @@ before-install:
   - composer self-update
 
 install:
-    - printf "\n" | pecl install memcached
-    - printf "\n" | pecl install -f redis
+    - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - composer install
 
 script:
