@@ -13,13 +13,11 @@ services:
 
 before-install:
   - phpenv config-rm xdebug.ini
-  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - composer self-update
 
 install:
-    - pecl install redis
-    - pecl install memcached
-    - composer self-update
+    - yes '' | pecl install -f redis
+    - yes '' | pecl install -f memcached
     - composer install
 
 script:
