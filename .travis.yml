@@ -1,11 +1,17 @@
 language: php
+
 php:
     - 7.0
+
 services:
     - memcache
     - redis
-before-script:
+
+before-install:
     - composer self-update
+
+install:
     - composer install
+
 script:
-    - ./vendor/bin/phpunit
+    - vendor/bin/phpunit
