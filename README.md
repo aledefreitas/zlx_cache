@@ -1,5 +1,7 @@
 # ZLX Cache
 [![Build Status](https://travis-ci.org/aledefreitas/zlx_cache.svg?branch=master)](https://travis-ci.org/aledefreitas/zlx_cache)
+[![Latest Stable Version](https://poser.pugx.org/aledefreitas/zlx_cache/v/stable)](https://packagist.org/packages/aledefreitas/zlx_cache)
+[![License](https://poser.pugx.org/aledefreitas/zlx_cache/license)](https://packagist.org/packages/aledefreitas/zlx_cache)
 
 ZLX Cache v1.0.0 - 11 de Janeiro de 2016
 
