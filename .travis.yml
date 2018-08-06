@@ -6,6 +6,6 @@ services:
     - memcache
     - redis
 
-before-script:
+before-install:
     - composer self-update
     - composer install
