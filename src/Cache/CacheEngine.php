@@ -15,11 +15,6 @@
  */
 namespace ZLX\Cache;
 
-require_once(__DIR__ . "/Engine/MemcachedEngine.php");
-require_once(__DIR__ . "/Engine/MemcacheEngine.php");
-require_once(__DIR__ . "/Engine/RedisEngine.php");
-require_once(__DIR__ . "/Engine/NullEngine.php");
-
 /**
  * Classe abstrata das Engines de Cache
  * Todas as classes que forem ser utilizadas no ZLX\Cache como Engine devem ser filhas desta classe.
@@ -213,12 +208,12 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	protected function _key($key, $use_stale = false) {
-		$key = strtolower($this->sanitizeKey($key));
-
 		if($group = explode(".", $key))
 			$group = $group[0];
 		else
 			$group = "";
+
+		$key = strtolower($this->sanitizeKey($key));
 
 		$groupToCompare = $group;
 
@@ -240,20 +235,14 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	public function readLastClearedData($key) {
-		$_returnData = false;
-
 		$group = explode(".", $key);
 		$group = @$group[0];
 
-		if(isset($this->groups[$group]))
-			for($_clear_count = $this->groups[$group] - 1; $_clear_count >= 0; $_clear_count--):
-				$clearedData = parent::read($group."_".$_clear_count."_".$key);
+		if(isset($this->_groups[$group])) {
+			return $this->get($this->_key($key.'_stale_data', true));
+		}
 
-				if($clearedData !== false)
-					return $clearedData;
-			endfor;
-
-		return $_returnData;
+		return false;
 	}
 
 	/**
@@ -276,7 +265,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	public function setStaleData($key, $value) {
-		$this->set($this->_key($key."_stale_data"), $value, 300);
+		$this->set($this->_key($key."_stale_data"), $value, max(300, $this->_configs['duration'] - 300));
 	}
 
 	/**
@@ -304,7 +293,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	private function saveGroups() {
-		$this->set($this->_prefix."CacheComponentGroups", $this->_groups);
+		$this->set("CacheComponentGroups", $this->_groups, false, false);
 	}
 
 	/**

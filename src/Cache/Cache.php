@@ -15,8 +15,6 @@
  */
 namespace ZLX\Cache;
 
-require_once(__DIR__ . "/CacheEngine.php");
-
 /**
  * # ZLX Cache
  * ===============
@@ -42,14 +40,14 @@ require_once(__DIR__ . "/CacheEngine.php");
  * É possível instalar o ZLX\Cache através do Composer. Adicione no seu ```composer.json```:
  * ```
  * {
- *    "repositories": [
+ *    'repositories': [
  *        {
- *            "url": "https://github.com/aledefreitas/zlx_cache.git",
- *            "type": "git"
+ *            'url': 'https://github.com/aledefreitas/zlx_cache.git',
+ *            'type': 'git'
  *        }
  *    ],
- *    "require": {
- *        "aledefreitas/zlx_cache": "*"
+ *    'require': {
+ *        'aledefreitas/zlx_cache': '*'
  *    }
  * }
  * ```
@@ -57,7 +55,7 @@ require_once(__DIR__ . "/CacheEngine.php");
  *
  * Ou então você pode baixar a release que quiser no (nosso repositório)[https://github.com/aledefreitas/zlx_cache/releases], e fazer um require no inicio de seu código:
  * ```php
- * 		require_once("path/to/zlx/cache/Cache.php");
+ * 		require_once('path/to/zlx/cache/Cache.php');
  * ```
  *
  * ### Requerimentos
@@ -163,7 +161,7 @@ require_once(__DIR__ . "/CacheEngine.php");
  * Suponhamos que em determinado momento da sua lógica, você cria uma entrada de Cache sob o grupo 'Posts', para guardar os dados de uma postagem
  * específica:
  * ```php
- * 		Cache::set("Posts.data.".$id_post, [ "title" => "Meus dados do post", "body" => "Corpo do meu post" ]);
+ * 		Cache::set('Posts.data.'.$id_post, [ 'title' => 'Meus dados do post', 'body' => 'Corpo do meu post' ]);
  * ```
  * Ao utilizar o padrão 'Grupo.chave' para salvar, deletar, ou retornar uma chave (***set()***, ***get()***, ***delete()***, ***remember()***), caso
  * o grupo esteja no array de grupos da sua instância, ele será salvo sob este grupo.
@@ -259,22 +257,27 @@ class Cache {
 	 *
 	 * @var array
 	 */
-	private static $_engines = [ 	"memcached" =>	"MemcachedEngine",
-									"memcache" => "MemcacheEngine",
-									"redis" => "RedisEngine" ];
+	private static $_engines = [
+		'memcached' =>	'MemcachedEngine',
+		'memcache' => 'MemcacheEngine',
+		'redis' => 'RedisEngine'
+	];
 
 	/**
 	 * Configurações padrões para a classe ZLX Cache
 	 *
 	 * @var array
 	 */
-	private static $_configs = [ 	"prefix" => "default_zlx",
-									"instances" => [
-										"default" => [ 	"engine" => "memcached",
-														"prefix" => "memcached_default",
-														"namespaces" => [] ]
-									]
-								];
+	private static $_configs = [
+		'prefix' => 'default_zlx',
+		'instances' => [
+			'default' => [
+				'engine' => 'memcached',
+				'prefix' => 'memcached_default',
+				'namespaces' => []
+			]
+		]
+	];
 
 	/**
 	 * Array que armazena os namespaces e as instancias de cache pertencentes aos mesmos
@@ -311,12 +314,12 @@ class Cache {
 
 		try {
 			 // Criamos a instância de NullEngine para quando estivermos com cache desabilitado
-			self::$_instances["_zlx_null_engine_"] = new \ZLX\Cache\Engine\NullEngine([]);
+			self::$_instances['_zlx_null_engine_'] = new \ZLX\Cache\Engine\NullEngine([]);
 
 			// Iteramos entre o array de instâncias, adicionando as instâncias à classe
 			foreach(self::$_configs['instances'] as $instance => $config):
 				// Caso a instância criada tenha o nome reservado para NullEngine, ela será ignorada
-				if($instance == "_zlx_null_engine_") continue;
+				if($instance == '_zlx_null_engine_') continue;
 
 				// Construímos a instancia
 				self::_buildInstance(strtolower($instance), $config);
@@ -363,7 +366,7 @@ class Cache {
 	 * @return void
 	 */
 	private static function _throwError($message) {
-		trigger_error("[ZLX_CACHE ERROR] ".$message, E_USER_WARNING);
+		trigger_error('[ZLX_CACHE ERROR] '.$message, E_USER_WARNING);
 	}
 
 	/**
@@ -393,17 +396,17 @@ class Cache {
 				endforeach;
 			endif;
 
-			$class = "\ZLX\\Cache\\Engine\\".self::$_engines[strtolower($config['engine'])];
+			$class = '\ZLX\\Cache\\Engine\\'.self::$_engines[strtolower($config['engine'])];
 			self::$_instances[$cache_instance] = new $class($config);
 		// Senão existir suporte built-in, tentamos utilizar a classe personalizada enviada
 		else:
 			if(!class_exists($config['engine']))
-				throw new \Exception("A Engine '".$config['engine']."' não existe.");
+				throw new \Exception('A Engine \''.$config['engine'].'\' não existe.');
 
 			// Criamos uma instância da classe enviada, e checamos se ela é filha de ZLX\Cache\Engine
 			$instance = new $config['engine']($config);
 			if(!($instance instanceof ZLX\Cache\CacheEngine))
-				throw new \Exception("A Engine deve ser uma extensão da classe ZLX\Cache\CacheEngine.");
+				throw new \Exception('A Engine deve ser uma extensão da classe ZLX\Cache\CacheEngine.');
 
 			// Caso seja, ela é adicionada à lista de instâncias
 			self::$_instances[$cache_instance] = $instance;
@@ -419,11 +422,11 @@ class Cache {
 	 *
 	 * @return ZLX\Cache\CacheEngine
 	 */
-	private static function instance($instance = "default") {
+	private static function instance($instance = 'default') {
 		$instance = strtolower($instance);
 
 		if(!isset(self::$_instances[$instance])):
-			self::_throwError(sprintf("Não foi possível encontrar a instância '%s', portanto o cache foi desabilitado para funções desta instância.", $instance));
+			self::_throwError(sprintf('Não foi possível encontrar a instância \'%s\', portanto o cache foi desabilitado para funções desta instância.', $instance));
 			return self::$_instances['_zlx_null_engine_'];
 		endif;
 
@@ -439,20 +442,20 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	public static function set($key, $value, $instance = "default") {
+	public static function set($key, $value, $instance = 'default') {
 		$engine = self::instance($instance);
 
 		if(is_resource($value))
 			return false;
 
-		if($value==="")
+		if($value==='')
 			return false;
 
 		$success = $engine->set($key, $value);
 		$engine->setStaleData($key, $value);
 
 		if(!$success)
-			self::_throwError(sprintf("Não foi possível salvar '%s' na instancia de '%s' (%s)", $key, $instance, get_class($engine)));
+			self::_throwError(sprintf('Não foi possível salvar \'%s\' na instancia de \'%s\' (%s)', $key, $instance, get_class($engine)));
 
 		return $success;
 	}
@@ -466,9 +469,8 @@ class Cache {
 	 *
 	 * @return mixed
 	 */
-	public static function get($key, $instance = "default", $use_stale = true) {
+	public static function get($key, $instance = 'default', $use_stale = true) {
 		$engine = self::instance($instance);
-
 		$value = $engine->get($key);
 
 		if($value === false and $use_stale === true):
@@ -496,11 +498,10 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	public static function delete($key, $instance = "default") {
+	public static function delete($key, $instance = 'default') {
 		$engine = self::instance($instance);
 
 		$success = $engine->delete($key);
-		$engine->delete($key."_stale_data");
 
 		return $success;
 	}
@@ -513,7 +514,7 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	public static function clear($ignore_prevents = false, $instance = "default") {
+	public static function clear($ignore_prevents = false, $instance = 'default') {
 		$engine = self::instance($instance);
 
 		$engine->clear($ignore_prevents);
@@ -532,16 +533,16 @@ class Cache {
         if ($existing !== false)
             return $existing;
 
-		$lock_key = explode(".", $key);
+		$lock_key = explode('.', $key);
 		// Forçamos o lock_key a sempre ser um GRUPO [.SUBGRUPO [.KEY do cache do Site, invés da chave completa
 		if($lock_key !== false)
-			$lock_key = implode(".", array_slice($lock_key, 0, 3));
+			$lock_key = implode('.', array_slice($lock_key, 0, 3));
 		else
 			$lock_key = $key;
 
 		$lock_acquired = self::acquire_lock($lock_key, 5, $instance);
 
-		$max_tries = 50;
+		$max_tries = 30;
 		$tries = 0;
 
 		while(!$lock_acquired and $tries < $max_tries):
@@ -598,7 +599,7 @@ class Cache {
 	 */
 	private static function acquire_lock($key, $ttl = 5, $instance = 'default') {
 		for($thread = 1; $thread <= self::$number_of_threads; $thread++)
-			if(self::add($key."__lock_thread_".$thread."__", 1, $instance, $ttl))
+			if(self::add($key.'__lock_thread_'.$thread.'__', 1, $instance, $ttl))
 				return (int)$thread;
 
 		return false;
@@ -616,7 +617,7 @@ class Cache {
 	 * @return boolean
 	 */
 	private static function release_lock($thread, $key, $instance = 'default') {
-		return self::delete($key."__lock_thread_".$thread."__", $instance);
+		return self::delete($key.'__lock_thread_'.$thread.'__', $instance);
 	}
 
 
@@ -645,7 +646,7 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	public static function clearGroup($group, $instance = "default") {
+	public static function clearGroup($group, $instance = 'default') {
 		$engine = self::instance($instance);
 
 		return $engine->clearGroup($group);

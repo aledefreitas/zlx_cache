@@ -27,18 +27,12 @@ class RedisEngine extends CacheEngine {
 	 * Array contendo as configurações padrões da classe
 	 * @var array
 	 */
-	public $_defaultConfigs = [ 	"serializer" => "php",
-									"host" => "127.0.0.1",
-									"port" => "6379",
-									"persistent" => false ];
-
-	/**
-	 * Array contendo os serializers disponíveis da classe
-	 * @var array
-	 */
-	private $_serializers = [ 	"php" => Redis::SERIALIZER_PHP,
-								"igbinary" => Redis::SERIALIZER_IGBINARY,
-								"none" => Redis::SERIALIZER_NONE ];
+	public $_defaultConfigs = [
+		"host" => "127.0.0.1",
+		"port" => "6379",
+		"database" => 0,
+		"persistent" => false
+	];
 
 	/**
 	 * Variável que salva a instância da conexão do redis
@@ -52,11 +46,9 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return void
 	 */
-	public function __construct(array $config) {
+	public function __construct(array $config)
+	{
 		$this->_configs = array_merge($this->_defaultConfigs, $config);
-
-		if(!isset($this->_serializers[$this->_configs['serializer']]))
-			$this->_configs['serializer'] = "none";
 
 		$this->connect();
 
@@ -64,11 +56,25 @@ class RedisEngine extends CacheEngine {
 	}
 
 	/**
+	 * Método destrutor
+	 *
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		if($this->connection)
+			$this->connection->close();
+
+		$this->connection = false;
+	}
+
+	/**
 	 * Conecta a um servidor de redis
 	 *
 	 * @return void
 	 */
-	private function connect() {
+	private function connect()
+	{
 		if(!$this->connection):
 			$this->connection = new Redis();
 
@@ -78,7 +84,7 @@ class RedisEngine extends CacheEngine {
 				$this->connection->connect($this->_configs['host'], $this->_configs['port']);
 			endif;
 
-			$this->connection->setOption(Redis::OPT_SERIALIZER, $this->_serializers[$this->_configs['serializer']]);
+			$this->connection->select($this->_configs['database']);
 		endif;
 	}
 
@@ -87,7 +93,8 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return void
 	 */
-	public function disconnect() {
+	public function disconnect()
+	{
 		if($this->connection)
 			$this->connection->close();
 
@@ -103,10 +110,15 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return boolean
 	 */
-	public function set($key, $value, $custom_ttl = false) {
+	public function set($key, $value, $custom_ttl = false)
+	{
 		$ttl = $custom_ttl !== false ? $custom_ttl : $this->_configs['duration'];
 
-		return $this->connection->set($this->_key($key), $value, $ttl);
+		if(!is_int($value)) {
+			$value = json_encode($value);
+		}
+
+		return $this->connection->setEx($this->_key($key), $ttl, $value);
 	}
 
 	/**
@@ -116,11 +128,19 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return mixed
 	 */
-	public function get($key) {
+	public function get($key)
+	{
 		$data = $this->connection->get($this->_key($key));
-		if(!$data) return false;
 
-		return $data;
+		if (preg_match('/^[-]?\d+$/', $data)) {
+            return (int)$data;
+        }
+
+        if ($data !== false && is_string($data)) {
+            return json_decode($data, true);
+        }
+
+        return $data;
 	}
 
 	/**
@@ -128,8 +148,10 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return void
 	 */
-	public function delete($key) {
+	public function delete($key)
+	{
 		$this->connection->delete($this->_key($key));
+		$this->connection->delete($this->_key($key.'_stale_data'));
 	}
 
 	/**
@@ -141,8 +163,19 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return boolean
 	 */
-	public function add($key, $value, $ttl = 3) {
-		return $this->connection->sAdd($this->_key($key), $value);
+	public function add($key, $value, $ttl = 3)
+	{
+		if(!is_int($value)) {
+			$value = json_encode($value);
+		}
+
+		$key = $this->_key($key);
+
+		if($this->connection->setnx($key, $value)) {
+			return $this->connection->setTimeout($key, $ttl);
+		}
+
+		return false;
 	}
 
 	/**
@@ -152,7 +185,8 @@ class RedisEngine extends CacheEngine {
 	 *
 	 * @return void
 	 */
-	public function clear($ignore_prevents = false) {
+	public function clear($ignore_prevents = false)
+	{
 		return $this->connection->flushAll();
 	}
 }

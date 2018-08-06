@@ -36,9 +36,7 @@ class MemcachedEngine extends CacheEngine {
 	 * Array contendo os serializers disponíveis da classe
 	 * @var array
 	 */
-	private $_serializers = [ 	"php" => Memcached::SERIALIZER_PHP,
-								"igbinary" => Memcached::SERIALIZER_IGBINARY,
-								"json" => Memcached::SERIALIZER_JSON ];
+	private $_serializers = [];
 
 	/**
 	 * Variável que salva a instância da conexão do Memcached
@@ -53,6 +51,12 @@ class MemcachedEngine extends CacheEngine {
 	 * @return void
 	 */
 	public function __construct(array $config) {
+		$this->_serializers = [
+			"php" => Memcached::SERIALIZER_PHP,
+			"igbinary" => Memcached::SERIALIZER_IGBINARY,
+			"json" => Memcached::SERIALIZER_JSON
+		];
+		
 		$this->_configs = array_merge($this->_defaultConfigs, $config);
 
 		if(defined('Memcached::HAVE_MSGPACK') and Memcached::HAVE_MSGPACK === true):

@@ -22,31 +22,21 @@ Também pode apagar dados de várias instâncias de uma só vez, através dos na
 
 
 ### Instalação
---------- 
-É possível instalar o ZLX\Cache através do Composer. Adicione no seu ```composer.json```:
+---------
+É possível instalar o ZLX\Cache através do Composer:
 ```
-{
-   "repositories": [
-       {
-           "url": "https://github.com/aledefreitas/zlx_cache.git",
-           "type": "git"
-       }
-   ],
-   "require": {
-       "aledefreitas/zlx_cache": "*"
-   }
-}
-```
-
-Ou então você pode baixar a release que quiser no [nosso repositório](https://github.com/aledefreitas/zlx_cache/releases), e fazer um require no inicio de seu código:
-```php
-		require_once("path/to/zlx/cache/Cache.php");
+composer require aledefreitas/zlx_cache
 ```
 
 ### Requerimentos
 ---------
- - ***PHP 5.6+***
- - ***Memcached***
+- ***PHP 7.0+***
+
+### Pre-built Engines
+---------
+- ***Redis***
+- ***Memcached***
+- ***Memcache***
 
 ### Modo de uso
 ---------
@@ -77,9 +67,9 @@ Podemos criar instancias novas programáticamente em tempo de execução com a f
 	$config = [	'engine' => 'memcached',
 				'duration' => '+10 minutes',
 				'groups' => [ 'Posts', 'Comments', 'Session' ],
-				'prevent_clear' => [ 'Session' ] 
+				'prevent_clear' => [ 'Session' ]
 			];
-			
+
  	Cache::create('meu_cache', $config);
 ```
 #### Atributos das instâncias:
@@ -156,8 +146,8 @@ grupo, ela não será encontrada no cache, e portanto será renovada!
 
 ### Funcionamento dos Namespaces
 ---------
-É muito parecido com o funcionamento de grupos, porém funciona num escopo acima dos grupos. Os grupos pertencem à instancia, e as instâncias pertencem aos 
-namespaces. 
+É muito parecido com o funcionamento de grupos, porém funciona num escopo acima dos grupos. Os grupos pertencem à instancia, e as instâncias pertencem aos
+namespaces.
 Quando o método**clearNamespace()*** for invocado, ele irá executar um clear (***ignorando os prevents***) em todas as instâncias pertencentes ao
 namespace a ser resetado.
 
@@ -172,30 +162,30 @@ use ZLX\Cache\CacheEngine;
 
 	class CustomCacheEngine extends CacheEngine {
 	public $_defaultConfigs; // Configurações padrões
-		 
+
 	public function __construct(array $config) {
 		// Lógica do método construtor
 
 		$this->_configs = array_merge($this->_defaultConfigs, $config); // Merge das configurações padrões. É necessário caso haja configurações padrões.
-		parent::__construct($config);	
+		parent::__construct($config);
 	}
-	
+
 	public function set($key, $value, $custom_ttl = false) {
-		// Lógica de salvamento de valores no cache	
+		// Lógica de salvamento de valores no cache
 	}
-	
+
 	public function get($key) {
-		// Lógica de busca de valores no cache	
+		// Lógica de busca de valores no cache
 	}
-	
+
 	public function delete($key) {
-		// Lógica de apagamento de valor no cache	
+		// Lógica de apagamento de valor no cache
 	}
-	
+
 	public function clear($ignore_prevents) {
-		// Lógica para reset do cache	
+		// Lógica para reset do cache
 	}
-	
+
 	public function add($key, $value, $ttl = 3) {
 		// Lógica para add no cache
 	}
@@ -214,7 +204,7 @@ Então, será possível adicionar instâncias desta classe de duas maneiras dife
 										'prevent_clear' => [ 'Session' ] ]
 				]
 			];
-			
+
  	Cache::init($config);
 ```
 
@@ -225,9 +215,9 @@ Então, será possível adicionar instâncias desta classe de duas maneiras dife
 	$config = [	'engine' => 'CustomCacheEngine',
 				'duration' => '+10 minutes',
 				'groups' => [ 'Posts', 'Comments', 'Session' ],
-				'prevent_clear' => [ 'Session' ] 
+				'prevent_clear' => [ 'Session' ]
 			];
-			
+
  	Cache::create('meu_cache', $config);
 ```
 
