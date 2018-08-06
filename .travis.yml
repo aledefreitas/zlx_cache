@@ -1,14 +1,21 @@
 language: php
 
+dist: trusty
+
 php:
     - 7.0
 
+sudo: required
+
 services:
     - memcache
-    - redis
+    - redis-server
 
 before-install:
-    - composer self-update
+  - phpenv config-rm xdebug.ini
+  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - composer self-update
 
 install:
     - composer install
