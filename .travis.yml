@@ -17,7 +17,7 @@ before-install:
 
 install:
     - printf "\n" | pecl install -f redis
-    - printf "\n" | pecl install -f memcached
+    - printf "\n" | pecl install memcached
     - composer install
 
 script:
