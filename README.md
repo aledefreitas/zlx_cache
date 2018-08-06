@@ -3,19 +3,6 @@
 [![Latest Stable Version](https://poser.pugx.org/aledefreitas/zlx_cache/v/stable)](https://packagist.org/packages/aledefreitas/zlx_cache)
 [![License](https://poser.pugx.org/aledefreitas/zlx_cache/license)](https://packagist.org/packages/aledefreitas/zlx_cache)
 
-ZLX Cache v1.0.0 - 11 de Janeiro de 2016
-
-ZLX Cache v1.1.0 - 16 de Setembro de 2016
-
-ZLX Cache v1.2.0 - 24 de Novembro de 2016
-
-por Alexandre de Freitas Caetano
-http://github.com/aledefreitas/
-
-baseado em CakePHP Cache
-http://github.com/cakephp/cakephp/
-
-
 ### Introdução
 ---------
 A classe ZLX\Cache traz uma forma elegante de utilizar cache na aplicação, facilitando a implementação de sistemas de Cache em sua aplicação.
