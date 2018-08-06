@@ -16,8 +16,8 @@ before-install:
   - composer self-update
 
 install:
-    - yes '' | pecl install -f redis
-    - yes '' | pecl install -f memcached
+    - printf "\n" | pecl install -f redis
+    - printf "\n" | pecl install -f memcached
     - composer install
 
 script:
