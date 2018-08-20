@@ -366,7 +366,8 @@ class Cache {
 	 * @return void
 	 */
 	private static function _throwError($message) {
-		trigger_error('[ZLX_CACHE ERROR] '.$message, E_USER_WARNING);
+		if(\php_sapi_name() != 'cli')
+			trigger_error('[ZLX_CACHE ERROR] '.$message, E_USER_WARNING);
 	}
 
 	/**
