@@ -195,7 +195,7 @@ abstract class CacheEngine {
 
 		$this->_prefix = $this->_configs['prefix'];
 
-		$cacheGroups = $this->get($this->_prefix."CacheComponentGroups");
+		$cacheGroups = $this->get("CacheComponentGroups");
 
 		$this->_groups = $cacheGroups?$cacheGroups:$this->_groups;
 	}
