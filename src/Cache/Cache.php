@@ -502,6 +502,7 @@ class Cache {
 	public static function delete($key, $instance = 'default') {
 		$engine = self::instance($instance);
 
+		$engine->deleteStaleData($key);
 		$success = $engine->delete($key);
 
 		return $success;

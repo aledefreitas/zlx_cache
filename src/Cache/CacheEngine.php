@@ -257,6 +257,18 @@ abstract class CacheEngine {
 	}
 
 	/**
+	 * Deleta os dados Stale de uma chave de cache
+	 *
+	 * @param  string  $key
+	 *
+	 * @return void
+	 */
+	public function deleteStaleData($key)
+	{
+		$this->delete($this->_key($key."_stale_data"));
+	}
+
+	/**
 	 * Escreve os dados Stale para uma chave do cache
 	 *
 	 * @param	string	$key		Key a ser escrita no cache
