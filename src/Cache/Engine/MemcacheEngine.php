@@ -35,7 +35,7 @@ class MemcacheEngine extends CacheEngine {
 	 * Variável que salva a instância da conexão do Memcache
 	 * @var boolean | \Memcache
 	 */
-	private $connection = false;
+	protected $connection = false;
 
 	/**
 	 * Método construtor
@@ -55,7 +55,7 @@ class MemcacheEngine extends CacheEngine {
 	 *
 	 * @return void
 	 */
-	private function connect() {
+	protected function connect() {
 		if(!$this->connection):
 			$this->connection = new Memcache();
 

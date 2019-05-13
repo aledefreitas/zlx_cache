@@ -250,14 +250,14 @@ class Cache {
 	 *
 	 * @var array
 	 */
-	private static $_instances = [];
+	protected static $_instances = [];
 
 	/**
 	 * Engines disponíveis para utilização com o ZLX Cache
 	 *
 	 * @var array
 	 */
-	private static $_engines = [
+	protected static $_engines = [
 		'memcached' =>	'MemcachedEngine',
 		'memcache' => 'MemcacheEngine',
 		'redis' => 'RedisEngine'
@@ -268,7 +268,7 @@ class Cache {
 	 *
 	 * @var array
 	 */
-	private static $_configs = [
+	protected static $_configs = [
 		'prefix' => 'default_zlx',
 		'instances' => [
 			'default' => [
@@ -284,7 +284,7 @@ class Cache {
 	 *
 	 * @var array
 	 */
-	private static $namespaces = [];
+	protected static $namespaces = [];
 
 	/**
 	 * Boolean que determina se o ZLX Cache está ligado, ou desligado.
@@ -292,14 +292,14 @@ class Cache {
 	 *
 	 * @var boolean
 	 */
-	private static $_enabled = true;
+	protected static $_enabled = true;
 
 	/**
 	 * Número de threads máximo para execução simultanea de locks de execução
 	 *
 	 * @var int
 	 */
-	private static $number_of_threads = 1;
+	protected static $number_of_threads = 1;
 
 	/**
 	 * Função inicializadora do ZLX Cache.
@@ -365,7 +365,7 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	private static function _throwError($message) {
+	protected static function _throwError($message) {
 		if(\php_sapi_name() != 'cli')
 			trigger_error('[ZLX_CACHE ERROR] '.$message, E_USER_WARNING);
 	}
@@ -383,7 +383,7 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	private static function _buildInstance($cache_instance, array $config) {
+	protected static function _buildInstance($cache_instance, array $config) {
 		// Caso exista suporte à engine enviada nas configurações, então criamos a partir dela
 		if(isset(self::$_engines[strtolower($config['engine'])])):
 			// Adicionamos o prefixo da classe de Cache ao prefixo da instância
@@ -423,7 +423,7 @@ class Cache {
 	 *
 	 * @return ZLX\Cache\CacheEngine
 	 */
-	private static function instance($instance = 'default') {
+	protected static function instance($instance = 'default') {
 		$instance = strtolower($instance);
 
 		if(!isset(self::$_instances[$instance])):
@@ -599,7 +599,7 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	private static function acquire_lock($key, $ttl = 5, $instance = 'default') {
+	protected static function acquire_lock($key, $ttl = 5, $instance = 'default') {
 		for($thread = 1; $thread <= self::$number_of_threads; $thread++)
 			if(self::add($key.'__lock_thread_'.$thread.'__', 1, $instance, $ttl))
 				return (int)$thread;
@@ -618,7 +618,7 @@ class Cache {
 	 *
 	 * @return boolean
 	 */
-	private static function release_lock($thread, $key, $instance = 'default') {
+	protected static function release_lock($thread, $key, $instance = 'default') {
 		return self::delete($key.'__lock_thread_'.$thread.'__', $instance);
 	}
 

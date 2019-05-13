@@ -95,7 +95,7 @@ abstract class CacheEngine {
 	 * Array contendo as configurações padrões da Engine
 	 * @var array
 	 */
-	private $_defaultConfigs = [
+	protected $_defaultConfigs = [
 		"duration" => "+30 minutes",
 		"prefix" => "zlx_cache_engine_default",
 		"namespaces" => [],
@@ -304,7 +304,7 @@ abstract class CacheEngine {
 	 *
 	 * @return void
 	 */
-	private function saveGroups() {
+	protected function saveGroups() {
 		$this->set("CacheComponentGroups", $this->_groups, false, false);
 	}
 
