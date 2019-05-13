@@ -17,12 +17,14 @@
 namespace ZLX\Cache\Engine;
 
 use ZLX\Cache\CacheEngine;
+use ZLX\Cache\Engine\Contracts\CacheEngineInterface;
 use \Memcache;
 
 /**
  * Engine para o Memcache
  */
-class MemcacheEngine extends CacheEngine {
+class MemcacheEngine extends CacheEngine implements CacheEngineInterface
+{
 	/**
 	 * Array contendo as configurações padrões da classe
 	 * @var array

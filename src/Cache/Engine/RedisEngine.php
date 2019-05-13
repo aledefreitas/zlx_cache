@@ -17,12 +17,14 @@
 namespace ZLX\Cache\Engine;
 
 use ZLX\Cache\CacheEngine;
+use ZLX\Cache\Engine\Contracts\CacheEngineInterface;
 use \Redis;
 
 /**
  * Engine para o Redis
  */
-class RedisEngine extends CacheEngine {
+class RedisEngine extends CacheEngine implements CacheEngineInterface
+{
 	/**
 	 * Array contendo as configurações padrões da classe
 	 * @var array

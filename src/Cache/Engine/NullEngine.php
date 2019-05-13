@@ -17,11 +17,13 @@
 namespace ZLX\Cache\Engine;
 
 use ZLX\Cache\CacheEngine;
+use ZLX\Cache\Engine\Contracts\CacheEngineInterface;
 
 /**
  * Engine nula
  */
-class NullEngine extends CacheEngine {
+class NullEngine extends CacheEngine implements CacheEngineInterface
+{
 	public function set($key, $value, $custom_ttl = false) {
 		return true;
 	}

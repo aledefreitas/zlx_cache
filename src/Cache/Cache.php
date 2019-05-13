@@ -406,7 +406,7 @@ class Cache {
 
 			// Criamos uma instância da classe enviada, e checamos se ela é filha de ZLX\Cache\Engine
 			$instance = new $config['engine']($config);
-			if(!($instance instanceof ZLX\Cache\CacheEngine))
+			if(!($instance instanceof \ZLX\Cache\Engine\Contracts\CacheEngineInterface))
 				throw new \Exception('A Engine deve ser uma extensão da classe ZLX\Cache\CacheEngine.');
 
 			// Caso seja, ela é adicionada à lista de instâncias
