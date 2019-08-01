@@ -152,8 +152,8 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 	 */
 	public function delete($key)
 	{
-		$this->connection->delete($this->_key($key));
-		$this->connection->delete($this->_key($key.'_stale_data'));
+		$this->connection->del($this->_key($key));
+		$this->connection->del($this->_key($key.'_stale_data'));
 	}
 
 	/**
