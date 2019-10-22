@@ -173,9 +173,13 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 
 		$key = $this->_key($key);
 
+		if ($this->connection->exists($key)) {
+			return false;
+		}
+
 		$this->connection->setEx($key, $ttl, $value);
 
-		return false;
+		return true;
 	}
 
 	/**
