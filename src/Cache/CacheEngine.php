@@ -305,7 +305,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	protected function saveGroups() {
-		$this->set("CacheComponentGroups", $this->_groups, false, false);
+		$this->set($this->_prefix . "CacheComponentGroups", $this->_groups, false, false);
 	}
 
 	/**
