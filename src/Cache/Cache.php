@@ -535,13 +535,7 @@ class Cache {
         if ($existing !== false)
             return $existing;
 
-		$lock_key = explode('.', $key);
-		// Forçamos o lock_key a sempre ser um GRUPO [.SUBGRUPO [.KEY do cache do Site, invés da chave completa
-		if($lock_key !== false)
-			$lock_key = implode('.', array_slice($lock_key, 0, 3));
-		else
-			$lock_key = $key;
-
+		$lock_key = $key;
 		$lock_acquired = self::acquire_lock($lock_key, 5, $instance);
 
 		$max_tries = 30;
