@@ -528,9 +528,10 @@ class Cache {
 	 * @param	string		$key		Chave a ser retornada do cache
 	 * @param	function	$callable	Método que retorna o valor da chave a ser setado, caso a mesma não exista
 	 * @param	string		$instance	Instância de Cache a utilizar
+     * @param   bool        $use_stable Use stale or not
 	 */
-	public static function remember($key, $callable, $instance = 'default') {
-        $existing = self::get($key, $instance);
+	public static function remember($key, $callable, $instance = 'default', $use_stale = true) {
+        $existing = self::get($key, $instance, $use_stale);
 
         if ($existing !== false)
             return $existing;
