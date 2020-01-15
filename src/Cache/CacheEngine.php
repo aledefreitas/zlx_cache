@@ -289,6 +289,9 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	public function clearGroup($groupKey) {
+        $cacheGroups = $this->get($this->_prefix . "CacheComponentGroups");
+		$this->_groups = $cacheGroups?$cacheGroups:$this->_groups;
+
 		if(isset($this->_groups[$groupKey])):
 			$this->_groups[$groupKey]++;
 
