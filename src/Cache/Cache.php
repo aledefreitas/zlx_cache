@@ -452,8 +452,8 @@ class Cache {
 		if($value==='')
 			return false;
 
+        $engine->setStaleData($key, $value);
 		$success = $engine->set($key, $value);
-		$engine->setStaleData($key, $value);
 
 		if(!$success)
 			self::_throwError(sprintf('Não foi possível salvar \'%s\' na instancia de \'%s\' (%s)', $key, $instance, get_class($engine)));

@@ -208,23 +208,23 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	protected function _key($key, $use_stale = false) {
-		if($group = explode(".", $key))
+        $use_stale = (substr($key, -strlen('__stale_data')) === '__stale_data');
+		if($group = explode(".", $key)) {
 			$group = $group[0];
-		else
+        } else {
 			$group = "";
+        }
 
 		$key = strtolower($this->sanitizeKey($key));
+        $groupCount = $this->_groups[$group] ?? '';
 
-		$groupToCompare = $group;
+		if(isset($this->_groups[$group])) {
+			if($use_stale === true) {
+                $groupCount = max(0, $groupCount - 1);
+            }
+        }
 
-		if(isset($this->_groups[$groupToCompare]))
-			if($use_stale === true)
-				return $this->_configs['prefix'].$group."_".max(0,$this->_groups[$groupToCompare]-1)."_".$key;
-			else
-				return $this->_configs['prefix'].$group."_".$this->_groups[$groupToCompare]."_".$key;
-
-
-		return $this->_configs['prefix'].str_replace(".", "_", $key);
+        return strtolower($this->_configs['prefix'].$group."_".$groupCount."_".$key);
 	}
 
 	/**
@@ -239,11 +239,21 @@ abstract class CacheEngine {
 		$group = @$group[0];
 
 		if(isset($this->_groups[$group])) {
-			return $this->get($this->_key($key.'_stale_data', true));
+			return $this->get($this->getStaleKey($key));
 		}
 
 		return false;
 	}
+
+    /**
+     * Pega o valor da chave para stale
+     *
+     * @return string
+     */
+    protected function getStaleKey($key)
+    {
+        return $key . '__stale_data';
+    }
 
 	/**
 	 * Tenta retornar dados Stale para uma chave do cache
@@ -253,7 +263,7 @@ abstract class CacheEngine {
 	 * @return mixed
 	 */
 	public function getStaleData($key) {
-		return $this->get($this->_key($key."_stale_data"));
+		return $this->get($this->getStaleKey($key));
 	}
 
 	/**
@@ -265,7 +275,7 @@ abstract class CacheEngine {
 	 */
 	public function deleteStaleData($key)
 	{
-		$this->delete($this->_key($key."_stale_data"));
+		$this->delete($this->getStaleKey($key));
 	}
 
 	/**
@@ -277,7 +287,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	public function setStaleData($key, $value) {
-		$this->set($this->_key($key."_stale_data"), $value, max(300, $this->_configs['duration'] - 300));
+		$this->set($this->getStaleKey($key), $value, ($this->_configs['duration'] + 300));
 	}
 
 	/**
