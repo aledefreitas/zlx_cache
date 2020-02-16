@@ -33,7 +33,8 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 		"host" => "127.0.0.1",
 		"port" => "6379",
 		"database" => 0,
-		"persistent" => false
+		"persistent" => false,
+        'password' => null,
 	];
 
 	/**
@@ -85,6 +86,10 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 			else:
 				$this->connection->connect($this->_configs['host'], $this->_configs['port']);
 			endif;
+
+            if (isset($this->_configs['password'])) {
+                $this->connection->auth($this->_configs['password']);
+            }
 
 			$this->connection->select($this->_configs['database']);
 		endif;
