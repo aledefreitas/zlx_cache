@@ -208,7 +208,6 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	protected function _key($key, $use_stale = false) {
-        $use_stale = (substr($key, -strlen('__stale_data')) === '__stale_data');
 		if($group = explode(".", $key)) {
 			$group = $group[0];
         } else {
@@ -239,7 +238,7 @@ abstract class CacheEngine {
 		$group = @$group[0];
 
 		if(isset($this->_groups[$group])) {
-			return $this->get($this->getStaleKey($key));
+			return $this->connection->get($this->_key($key, true));
 		}
 
 		return false;
