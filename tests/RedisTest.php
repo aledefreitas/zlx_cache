@@ -113,11 +113,11 @@ final class RedisTest extends TestCase
         $value = 'Post 1 no cache Default';
         Cache::set('Posts.post_1', $value, 'default');
         Cache::clearGroup('Posts');
-        // Sets the stale
+        // Sets the stale but returns false
         Cache::get('Posts.post_1');
 
         $this->assertEquals(
-            $value,
+            false,
             Cache::get('Posts.post_1')
         );
     }
