@@ -30,6 +30,7 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 	 * @var array
 	 */
 	public $_defaultConfigs = [
+        'socket' => null,
 		"host" => "127.0.0.1",
 		"port" => "6379",
 		"database" => 0,
@@ -81,11 +82,19 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 		if(!$this->connection):
 			$this->connection = new Redis();
 
-			if($this->_configs['persistent'] === true):
-				$this->connection->pconnect($this->_configs['host'], $this->_configs['port']);
-			else:
-				$this->connection->connect($this->_configs['host'], $this->_configs['port']);
-			endif;
+            if (isset($this->_configs['socket'])) {
+                if($this->_configs['persistent'] === true):
+    				$this->connection->pconnect($this->_configs['socket']);
+    			else:
+    				$this->connection->connect($this->_configs['socket']);
+    			endif;
+            } else {
+                if($this->_configs['persistent'] === true):
+    				$this->connection->pconnect($this->_configs['host'], $this->_configs['port']);
+    			else:
+    				$this->connection->connect($this->_configs['host'], $this->_configs['port']);
+    			endif;
+            }
 
             if (isset($this->_configs['password'])) {
                 $this->connection->auth($this->_configs['password']);
