@@ -195,9 +195,13 @@ abstract class CacheEngine {
 
 		$this->_prefix = $this->_configs['prefix'];
 
-		$cacheGroups = $this->get($this->_prefix . "CacheComponentGroups");
+		$cacheGroups = $this->get("CacheComponentGroups");
 
-		$this->_groups = $cacheGroups?$cacheGroups:$this->_groups;
+		$this->_groups = $cacheGroups ?
+            $cacheGroups :
+            $this->_groups;
+
+        $this->saveGroups();
 	}
 
 	/**
@@ -298,7 +302,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	public function clearGroup($groupKey) {
-        $cacheGroups = $this->get($this->_prefix . "CacheComponentGroups");
+        $cacheGroups = $this->get("CacheComponentGroups");
 		$this->_groups = $cacheGroups?$cacheGroups:$this->_groups;
 
 		if(isset($this->_groups[$groupKey])):
@@ -317,7 +321,7 @@ abstract class CacheEngine {
 	 * @return void
 	 */
 	protected function saveGroups() {
-		$this->set($this->_prefix . "CacheComponentGroups", $this->_groups, false, false);
+		$this->set("CacheComponentGroups", $this->_groups, false, false);
 	}
 
 	/**
