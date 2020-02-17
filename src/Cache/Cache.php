@@ -549,22 +549,21 @@ class Cache {
 			usleep(100000);
 		endwhile;
 
-		$engine = self::instance($instance);
-        $existing = $engine->get($key);
+        if ($lock_acquired === false) {
+            $engine = self::instance($instance);
+            $existing = $engine->get($key);
 
-        if ($existing !== false):
-			if($lock_acquired !== false):
-				self::release_lock($lock_acquired, $lock_key, $instance);
-			endif;
-
-            return $existing;
-		endif;
+            if ($existing !== false) {
+                return $existing;
+            }
+        }
 
         $results = call_user_func($callable);
         self::set($key, $results, $instance);
 
-		if($lock_acquired !== false)
+		if($lock_acquired !== false) {
 			self::release_lock($lock_acquired, $lock_key, $instance);
+        }
 
         return $results;
 	}

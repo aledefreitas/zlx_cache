@@ -28,7 +28,7 @@ class NullEngine extends CacheEngine implements CacheEngineInterface
 		return true;
 	}
 
-	public function get($key) {
+	public function get($key, $is_stale = false) {
 		return false;
 	}
 

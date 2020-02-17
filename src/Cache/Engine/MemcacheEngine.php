@@ -99,7 +99,8 @@ class MemcacheEngine extends CacheEngine implements CacheEngineInterface
 	 *
 	 * @return mixed
 	 */
-	public function get($key) {
+    public function get($key, $is_stale = false)
+    {
 		$data = $this->connection->get($this->_key($key));
 		if(!$data) return false;
 

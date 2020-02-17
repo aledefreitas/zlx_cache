@@ -145,7 +145,7 @@ abstract class CacheEngine {
 	 *
 	 * @return mixed
 	 */
-	abstract public function get($key);
+	abstract public function get($key, $is_stale = false);
 
 	/**
 	 * Apaga uma chave do cache
@@ -197,7 +197,7 @@ abstract class CacheEngine {
 
 		$cacheGroups = $this->get("CacheComponentGroups");
 
-		$this->_groups = $cacheGroups ?
+        $this->_groups = $cacheGroups ?
             $cacheGroups :
             $this->_groups;
 
@@ -212,22 +212,23 @@ abstract class CacheEngine {
 	 * @return string
 	 */
 	protected function _key($key, $use_stale = false) {
-		if($group = explode(".", $key)) {
-			$group = $group[0];
-        } else {
-			$group = "";
+        $group = null;
+        $groups = explode('.', $key);
+
+        if (strpos($key, '.') !== false) {
+            $group = array_shift($groups);
         }
 
 		$key = strtolower($this->sanitizeKey($key));
-        $groupCount = $this->_groups[$group] ?? '';
+        $groupCount = $this->_groups[$group] ?? null;
 
-		if(isset($this->_groups[$group])) {
-			if($use_stale === true) {
+        if (isset($group)) {
+            if ($use_stale === true) {
                 $groupCount = max(0, $groupCount - 1);
             }
         }
 
-        return strtolower($this->_configs['prefix'].$group."_".$groupCount."_".$key);
+        return strtolower($this->_configs['prefix'].$group.$groupCount."_".implode('_', $groups));
 	}
 
 	/**
@@ -242,7 +243,7 @@ abstract class CacheEngine {
 		$group = @$group[0];
 
 		if(isset($this->_groups[$group])) {
-			return $this->connection->get($this->_key($key, true));
+			return $this->get($key, true);
 		}
 
 		return false;

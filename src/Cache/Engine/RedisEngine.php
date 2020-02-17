@@ -135,9 +135,9 @@ class RedisEngine extends CacheEngine implements CacheEngineInterface
 	 *
 	 * @return mixed
 	 */
-	public function get($key)
+	public function get($key, $is_stale = false)
 	{
-		$data = $this->connection->get($this->_key($key));
+		$data = $this->connection->get($this->_key($key, $is_stale));
 
 		if (preg_match('/^[-]?\d+$/', $data)) {
             return (int)$data;
