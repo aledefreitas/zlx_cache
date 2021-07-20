@@ -128,6 +128,11 @@ abstract class CacheEngine {
 	protected $_namespaces = [];
 
 	/**
+	 * @var \ZLX\Cache\CacheStorage
+	 */
+	protected $storage;
+
+	/**
 	 * Cria uma chave com um valor no cache
 	 *
 	 * @param	string		$key			Nome da chave
@@ -202,6 +207,7 @@ abstract class CacheEngine {
             $this->_groups;
 
         $this->saveGroups();
+		$this->storage = new CacheStorage();
 	}
 
 	/**
@@ -314,6 +320,8 @@ abstract class CacheEngine {
 
 			$this->saveGroups();
 		endif;
+
+		$this->storage->clear();
 	}
 
 	/**
@@ -336,4 +344,52 @@ abstract class CacheEngine {
 		return preg_replace("/([^a-z0-9\._-]+)/i","_",$key);
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function engineSet($key, $value, $custom_ttl = false)
+	{
+		$this->storage->set($key, $value);
+		return $this->set($key, $value, $custom_ttl = false);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function engineGet($key, $is_stale = false)
+	{
+		if ($result = $this->storage->get($key)) {
+			return $result;
+		}
+
+		return $this->get($key, $is_stale = false);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function engineAdd($key, $value, $ttl = 3)
+	{
+		return $this->add($key, $value, $ttl = 3);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function engineDelete($key)
+	{
+		$this->storage->delete($key);
+
+		return $this->delete($key);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function engineClear($ignore_prevents = false)
+	{
+		$this->storage->clear();
+
+		return $this->clear($ignore_prevents = false);
+	}
 }

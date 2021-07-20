@@ -453,7 +453,7 @@ class Cache {
 			return false;
 
         $engine->setStaleData($key, $value);
-		$success = $engine->set($key, $value);
+		$success = $engine->engineSet($key, $value);
 
 		if(!$success)
 			self::_throwError(sprintf('Não foi possível salvar \'%s\' na instancia de \'%s\' (%s)', $key, $instance, get_class($engine)));
@@ -472,7 +472,7 @@ class Cache {
 	 */
 	public static function get($key, $instance = 'default', $use_stale = true) {
 		$engine = self::instance($instance);
-		$value = $engine->get($key);
+		$value = $engine->engineGet($key);
 
 		if($value === false and $use_stale === true):
 			$stale = $engine->getStaleData($key);
@@ -503,7 +503,7 @@ class Cache {
 		$engine = self::instance($instance);
 
 		$engine->deleteStaleData($key);
-		$success = $engine->delete($key);
+		$success = $engine->engineDelete($key);
 
 		return $success;
 	}
@@ -519,7 +519,7 @@ class Cache {
 	public static function clear($ignore_prevents = false, $instance = 'default') {
 		$engine = self::instance($instance);
 
-		$engine->clear($ignore_prevents);
+		$engine->engineClear($ignore_prevents);
 	}
 
 	/**
@@ -551,7 +551,7 @@ class Cache {
 
         if ($lock_acquired === false) {
             $engine = self::instance($instance);
-            $existing = $engine->get($key);
+            $existing = $engine->engineGet($key);
 
             if ($existing !== false) {
                 return $existing;
@@ -581,7 +581,7 @@ class Cache {
 	public static function add($key, $value, $instance = 'default', $ttl = 5) {
 		$engine = self::instance($instance);
 
-		return $engine->add($key, $value, $ttl);
+		return $engine->engineAdd($key, $value, $ttl);
 	}
 
 	/**
@@ -629,7 +629,7 @@ class Cache {
 			foreach(self::$namespaces[$namespace] as $instance):
 				$engine = self::instance($instance);
 
-				$engine->clear();
+				$engine->engineClear();
 			endforeach;
 		endif;
 	}
